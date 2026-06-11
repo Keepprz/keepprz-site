@@ -13,26 +13,23 @@
 <body>
 <div id="chrome-top"></div>
 
-<!-- VIDEO HERO -->
-<section class="vhero" id="top">
-  <div class="vslide on"><video class="vbg" src="assets/video/cabin-exterior.mp4" muted autoplay loop playsinline></video></div>
-  <div class="vslide"><video class="vbg" src="assets/video/cabin-interior.mp4" muted autoplay loop playsinline></video></div>
-  <div class="wrap">
-    <div>
-      <div class="eyebrow">Mackay, Idaho · Lost River Valley</div>
-      <h1>One cabin. Big sky. Booked direct.</h1>
-      <p class="sub">A hand-built log cabin alone on open pasture, with Idaho's tallest peaks out every window. No platform fees, no middleman — the price you see is the price you pay.</p>
-      <div class="ctas">
-        <a class="btn btn-primary btn-lg" href="#book">Check availability</a>
-        <a class="btn btn-ghost btn-lg" href="#cabin">See the cabin</a>
+<!-- SCROLL-SCRUB HERO -->
+<section class="scrub" id="top">
+  <div class="scrub-stage">
+    <canvas id="scrub-canvas"></canvas>
+    <div class="scrub-bar" id="scrub-bar"></div>
+    <div class="scrub-label" id="scrub-label">⛰ Around the cabin — keep scrolling</div>
+    <div class="scrub-copy" id="scrub-copy">
+      <div class="wrap">
+        <div class="eyebrow">Mackay, Idaho · Lost River Valley</div>
+        <h1>One cabin. Big sky. Booked direct.</h1>
+        <p class="sub">A hand-built log cabin alone on open pasture, with Idaho's tallest peaks out every window. No platform fees, no middleman — the price you see is the price you pay.</p>
+        <div class="ctas">
+          <a class="btn btn-primary btn-lg" href="#book">Check availability</a>
+        </div>
       </div>
     </div>
-    <div class="vframe">
-      <video class="vfg on" src="assets/video/cabin-exterior.mp4" poster="assets/img/bv-ext-05.jpg" muted autoplay loop playsinline></video>
-      <video class="vfg" src="assets/video/cabin-interior.mp4" poster="assets/img/bv-int-05.jpg" muted autoplay loop playsinline></video>
-      <div class="vlabel" id="vlabel">⛰ From the air</div>
-      <div class="vdots" id="vdots"><span class="on" onclick="goSlide(0)"></span><span onclick="goSlide(1)"></span></div>
-    </div>
+    <div class="scrub-hint" id="scrub-hint">Scroll<span class="chev">⌄</span></div>
   </div>
 </section>
 
@@ -99,17 +96,93 @@
 mountChrome('stays');
 const L = CABIN;
 
-/* ---- hero crossfade ---- */
-const VLABELS = ["⛰ From the air", "🔥 Step inside"];
-let slide = 0, vtimer = setInterval(()=>goSlide(1-slide), 8000);
-function goSlide(n){
-  slide = n;
-  document.querySelectorAll('.vslide').forEach((el,i)=>el.classList.toggle('on', i===n));
-  document.querySelectorAll('.vfg').forEach((el,i)=>el.classList.toggle('on', i===n));
-  document.querySelectorAll('#vdots span').forEach((el,i)=>el.classList.toggle('on', i===n));
-  document.getElementById('vlabel').textContent = VLABELS[n];
-  clearInterval(vtimer); vtimer = setInterval(()=>goSlide(1-slide), 8000);
+/* ---- Apple-style scroll-scrub hero ----
+   Two frame sequences extracted from the cabin videos.
+   Scroll position drives which frame is drawn; the two clips
+   crossfade into each other, then the page fades into the listing. */
+const SEQS = [
+  { dir:"assets/frames/ext/", prefix:"ext-", count:68, label:"⛰ Around the cabin — keep scrolling" },
+  { dir:"assets/frames/int/", prefix:"int-", count:68, label:"🔥 Step inside" },
+];
+const FRAMES = SEQS.map(s => Array.from({length:s.count}, (_,i) => {
+  const img = new Image();
+  img.src = s.dir + s.prefix + String(i+1).padStart(3,"0") + ".jpg";
+  return img;
+}));
+const canvas = document.getElementById('scrub-canvas');
+const ctx = canvas.getContext ? canvas.getContext('2d') : null;
+const stage = document.querySelector('.scrub-stage');
+const section = document.querySelector('.scrub');
+const BONE = "#FAF6EF";
+
+function sizeCanvas(){
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  canvas.width = stage.clientWidth*dpr; canvas.height = stage.clientHeight*dpr;
+  dirty = true;
 }
+function lastLoaded(seq, idx){           // nearest decoded frame at or before idx
+  for(let i=idx;i>=0;i--) if(FRAMES[seq][i].complete && FRAMES[seq][i].naturalWidth) return FRAMES[seq][i];
+  for(let i=idx;i<FRAMES[seq].length;i++) if(FRAMES[seq][i].complete && FRAMES[seq][i].naturalWidth) return FRAMES[seq][i];
+  return null;
+}
+function drawCover(img, alpha){
+  if(!img) return;
+  const cw=canvas.width, ch=canvas.height;
+  const s = Math.max(cw/img.naturalWidth, ch/img.naturalHeight);
+  const w=img.naturalWidth*s, h=img.naturalHeight*s;
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(img, (cw-w)/2, (ch-h)/2, w, h);
+  ctx.globalAlpha = 1;
+}
+function progress(){
+  const r = section.getBoundingClientRect();
+  const total = r.height - window.innerHeight;
+  return Math.min(1, Math.max(0, -r.top/total));
+}
+
+/* segments: 0–.45 exterior orbit · .45–.58 crossfade · .58–.96 interior pan · .96–1 fade to listing */
+let dirty = true, lastLabel = 0;
+function render(){
+  requestAnimationFrame(render);
+  if(!dirty || !ctx) return; dirty = false;
+  const p = progress();
+  const cw=canvas.width, ch=canvas.height;
+  ctx.fillStyle="#1b1512"; ctx.fillRect(0,0,cw,ch);
+
+  if(p < 0.45){
+    const idx = Math.round(p/0.45*(SEQS[0].count-1));
+    drawCover(lastLoaded(0,idx), 1);
+  } else if(p < 0.58){
+    const t = (p-0.45)/0.13;
+    drawCover(lastLoaded(0,SEQS[0].count-1), 1);
+    drawCover(lastLoaded(1,Math.round(t*6)), t);
+  } else {
+    const t = Math.min(1,(p-0.58)/0.38);
+    const idx = Math.round(t*(SEQS[1].count-1));
+    drawCover(lastLoaded(1,idx), 1);
+  }
+  if(p > 0.96){                      // fade out to the page background
+    ctx.globalAlpha = (p-0.96)/0.04*0.9;
+    ctx.fillStyle = BONE; ctx.fillRect(0,0,cw,ch);
+    ctx.globalAlpha = 1;
+  }
+
+  // overlay copy fades as you start scrolling; hint disappears; label swaps at the crossfade
+  document.getElementById('scrub-copy').style.opacity = Math.max(0, 1-p*5);
+  document.getElementById('scrub-copy').style.pointerEvents = p>0.15?"none":"";
+  document.getElementById('scrub-hint').style.opacity = p>0.04?0:.85;
+  document.getElementById('scrub-bar').style.width = (p*100)+"%";
+  const lbl = p>=0.5?1:0;
+  if(lbl!==lastLabel || p<0.02){
+    lastLabel=lbl;
+    document.getElementById('scrub-label').textContent = SEQS[lbl].label;
+  }
+  document.getElementById('scrub-label').style.opacity = (p>0.03 && p<0.97)?1:0;
+}
+window.addEventListener('scroll', ()=>{ dirty=true; }, {passive:true});
+window.addEventListener('resize', sizeCanvas);
+FRAMES.flat().forEach(img => img.addEventListener('load', ()=>{ dirty=true; }, {once:true}));
+sizeCanvas(); render();
 
 /* ---- cabin content ---- */
 document.getElementById('cabin-name').textContent = L.name;

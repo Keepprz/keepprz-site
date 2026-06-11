@@ -225,6 +225,30 @@ img{max-width:100%;display:block}
 .demo-ribbon b{color:var(--honey)}
 .demo-ribbon a{color:#fff;text-decoration:underline}
 
+/* ---------- scroll-scrub hero (Apple-style) ---------- */
+.scrub{position:relative;height:420vh;background:#1b1512}
+.scrub-stage{position:sticky;top:0;height:100vh;overflow:hidden}
+.scrub-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.scrub-copy{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 0 9vh;color:#fff;pointer-events:none;
+  background:linear-gradient(180deg,rgba(20,15,12,.12) 0%,rgba(20,15,12,0) 40%,rgba(20,15,12,.62) 100%)}
+.scrub-copy .wrap{width:100%;pointer-events:auto}
+.scrub-copy .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:.78rem;font-weight:600;color:var(--honey);margin-bottom:.8em}
+.scrub-copy h1{font-size:clamp(2.5rem,5.5vw,4.4rem);max-width:14ch;text-shadow:0 2px 24px rgba(0,0,0,.5)}
+.scrub-copy p.sub{font-size:1.15rem;max-width:44ch;opacity:.95;text-shadow:0 1px 12px rgba(0,0,0,.55)}
+.scrub-copy .ctas{display:flex;gap:14px;flex-wrap:wrap;margin-top:1.3em}
+.scrub-copy .btn-ghost{color:#fff;border-color:rgba(255,255,255,.45)}
+.scrub-copy .btn-ghost:hover{border-color:#fff;color:#fff}
+.scrub-label{position:absolute;top:84px;left:22px;z-index:4;background:rgba(20,15,12,.55);backdrop-filter:blur(6px);
+  color:#fff;font-size:.8rem;font-weight:600;letter-spacing:.06em;padding:.5em 1em;border-radius:999px;
+  transition:opacity .4s}
+.scrub-hint{position:absolute;bottom:3.2vh;left:50%;transform:translateX(-50%);z-index:4;color:#fff;
+  font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.85;text-align:center;
+  transition:opacity .4s;pointer-events:none}
+.scrub-hint .chev{display:block;font-size:1.3rem;animation:bob 1.6s ease-in-out infinite;margin-top:2px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+.scrub-bar{position:absolute;top:0;left:0;height:3px;z-index:5;background:var(--honey);width:0%}
+
 /* ---------- video hero ---------- */
 .vhero{position:relative;min-height:80vh;display:flex;align-items:center;overflow:hidden;background:#1b1512;color:#fff}
 .vslide{position:absolute;inset:0;opacity:0;transition:opacity 1.8s ease}
