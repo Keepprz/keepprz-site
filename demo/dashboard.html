@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Owner Dashboard — Sawtooth Ridge Cabins · Keepprz</title>
+<title>Owner Dashboard — Borah Vista · Keepprz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,9 +11,9 @@
 </head>
 <body class="dash">
 <div class="topbar">
-  <div class="brand"><span class="mark">SR</span> Sawtooth Ridge <span style="color:#a89a8c;font-weight:400;font-size:.9rem">· Owner dashboard</span></div>
+  <div class="brand"><span class="mark">BV</span> Borah Vista <span style="color:#a89a8c;font-weight:400;font-size:.9rem">· Owner dashboard</span></div>
   <div style="display:flex;align-items:center;gap:14px">
-    <span style="font-size:.85rem;color:#a89a8c">Dana &amp; Mark Hollis</span>
+    <span style="font-size:.85rem;color:#a89a8c">Jason</span>
     <a href="index.html" class="btn btn-ghost" style="color:#f3ece1;border-color:#4a403a;padding:.5em 1em;font-size:.88rem">View guest site ↗</a>
   </div>
 </div>
@@ -39,12 +39,12 @@
 <script>
 const nb = loadBooking();   // the booking the visitor just made (if any)
 
-// seed of existing bookings already on the books
+// seed of existing bookings already on the books ($185/night + $95 cleaning + 8% tax)
 let rows = [
-  {who:"Priya & Sam Rao", cabin:"Sawtooth Lodge", dates:"Jun 20 → Jun 24", g:8, payout:2274, status:"paid"},
-  {who:"The Delgado family", cabin:"The Redfish A-Frame", dates:"Jul 3 → Jul 7", g:6, payout:1391, status:"paid"},
-  {who:"Marcus Lee", cabin:"Salmon River Studio", dates:"Aug 1 → Aug 5", g:2, payout:786, status:"upcoming"},
-  {who:"Erin Caldwell", cabin:"Pinegrove Bungalow", dates:"Jul 10 → Jul 14", g:4, payout:1003, status:"upcoming"},
+  {who:"Erin & Cole Caldwell", cabin:"The Borah Vista Cabin", dates:"Jun 12 → Jun 14", g:2, payout:495, status:"paid"},
+  {who:"Priya Rao", cabin:"The Borah Vista Cabin", dates:"Jun 19 → Jun 22", g:2, payout:694, status:"paid"},
+  {who:"The Delgados", cabin:"The Borah Vista Cabin", dates:"Jul 3 → Jul 6", g:2, payout:694, status:"upcoming"},
+  {who:"Marcus Lee", cabin:"The Borah Vista Cabin", dates:"Aug 7 → Aug 11", g:2, payout:894, status:"upcoming"},
 ];
 
 // host keeps the full guest payment minus the flat Keepprz fee ($100/mo + $20/booking) — never a %
@@ -90,7 +90,7 @@ document.getElementById('bk-body').innerHTML = rows.map(r=>`
 document.getElementById('lower').innerHTML = `
   <div class="kpi" style="background:#2b2522">
     <div class="lab">🧹 Cleaning turnover</div>
-    <h3 style="color:#fff;font-size:1.15rem;margin:.4em 0">${newRow?newRow.cabin:'The Redfish A-Frame'} — checkout ${newRow?newRow.dates.split('→')[1].trim():'Jul 7'}</h3>
+    <h3 style="color:#fff;font-size:1.15rem;margin:.4em 0">${newRow?newRow.cabin:'The Borah Vista Cabin'} — checkout ${newRow?newRow.dates.split('→')[1].trim():'Jul 6'}</h3>
     <p style="color:#cdbfac;font-size:.92rem;margin:0">Cleaner auto-assigned and notified. Photo checklist due at turnover — AI-verified before the next guest. <span style="color:#9fcf8a">On schedule.</span></p>
   </div>
   <div class="kpi" style="background:#2b2522">

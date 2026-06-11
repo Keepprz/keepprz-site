@@ -1,70 +1,35 @@
 /* ============================================================
-   Sawtooth Ridge Cabins — demo engine (powered by Keepprz)
-   No backend. Listings, availability + pricing all run client-side.
+   Borah Vista — demo engine (powered by Keepprz)
+   No backend. Availability + pricing all run client-side.
    ============================================================ */
 
 const BRAND = {
-  name: "Sawtooth Ridge Cabins",
-  initials: "SR",
-  host: "Dana & Mark Hollis",
-  town: "Stanley, Idaho",
-  email: "stay@sawtoothridge.example",
-  phone: "(208) 555-0147",
+  name: "Borah Vista",
+  initials: "BV",
+  host: "Jason",
+  town: "Mackay, Idaho",
+  email: "stay@borahvista.com",
+  phone: "(208) 555-0188",
   taxRate: 0.08,            // ID lodging + local, illustrative
 };
 
 const U = (id, w=1200) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=80`;
 const LOCAL = f => `assets/img/${f}`;
 
-/* ---- the "properties" table (what Keepprz would store per tenant) ---- */
-const LISTINGS = [
-  {
-    id:"redfish", name:"The Redfish A-Frame",
-    tagline:"Classic A-frame steps from Redfish Lake",
-    location:"Redfish Lake, Stanley ID", type:"A-frame cabin",
-    guests:6, beds:3, baths:2, nightly:289, cleaning:120, rating:4.97, reviews:142,
-    blurb:"A light-filled A-frame under the Sawtooths — wood stove, full kitchen, and the lake a 5-minute walk away.",
-    longDesc:"Wake up to peaks out every window. This restored A-frame sleeps six across three bedrooms, with a wood stove for cool evenings, a fully stocked kitchen, and a wraparound deck made for morning coffee. Redfish Lake — swimming, paddleboards, the lodge — is a short walk down the path. Trailheads start at the end of the road.",
-    amenities:["Fast Wi-Fi","Full kitchen","Wood-burning stove","Wraparound deck","Free parking","Washer & dryer","5 min to Redfish Lake","Dogs welcome"],
-    images:[U("1449158743715-0a90ebb6d2d8"), LOCAL("keepprz-hero-home.jpg"), U("1586023492125-27b2c045efd7"), LOCAL("keepprz-detail-linens.jpg"), U("1505691938895-1758d7feb511")],
-    booked:[["2026-06-12","2026-06-15"],["2026-07-03","2026-07-07"]],
-  },
-  {
-    id:"sawtooth-lodge", name:"Sawtooth Lodge",
-    tagline:"Big-group lodge with hot tub & mountain views",
-    location:"Stanley Basin, Stanley ID", type:"Whole lodge",
-    guests:10, beds:5, baths:3, nightly:465, cleaning:185, rating:4.92, reviews:88,
-    blurb:"Five bedrooms, a great room with a stone fireplace, and a hot tub pointed straight at the Sawtooth range.",
-    longDesc:"Built for reunions and crews. The great room centers on a floor-to-ceiling stone fireplace, the kitchen seats everyone, and the deck hot tub looks out on the whole Sawtooth skyline. Five bedrooms, three baths, and enough space that nobody's on top of anyone. Twenty minutes to whitewater on the Salmon.",
-    amenities:["Hot tub","Stone fireplace","Chef's kitchen","Sleeps 10","Fast Wi-Fi","Game room","Mountain views","EV charger"],
-    images:[U("1542718610-a1d656d1884c"), U("1564013799919-ab600027ffc6"), LOCAL("keepprz-turnover-room.jpg"), U("1502672260266-1c1ef2d93688"), LOCAL("keepprz-detail-coffee.jpg")],
-    booked:[["2026-06-20","2026-06-24"]],
-  },
-  {
-    id:"salmon-studio", name:"Salmon River Studio",
-    tagline:"Cozy riverfront studio for two",
-    location:"Lower Stanley, Stanley ID", type:"Studio cabin",
-    guests:2, beds:1, baths:1, nightly:159, cleaning:75, rating:4.99, reviews:204,
-    blurb:"A snug studio right on the Salmon — fall asleep to the river, fish from the back step.",
-    longDesc:"The whole place is one warm room done right: a queen bed, a little kitchenette, and big windows over the Salmon River. Step out the back and you're on the water. Perfect for a couple's getaway, and an easy stroll to Lower Stanley's cafés and the hot springs road.",
-    amenities:["Riverfront","Wi-Fi","Kitchenette","Queen bed","Free parking","Fire pit","Near hot springs","Self check-in"],
-    images:[U("1551882547-ff40c63fe5fa"), LOCAL("keepprz-detail-coffee.jpg"), U("1505691938895-1758d7feb511"), LOCAL("keepprz-detail-keys.jpg")],
-    booked:[["2026-06-18","2026-06-20"],["2026-08-01","2026-08-05"]],
-  },
-  {
-    id:"pinegrove", name:"Pinegrove Bungalow",
-    tagline:"Family bungalow tucked in the pines",
-    location:"Stanley, Idaho", type:"2-bed bungalow",
-    guests:4, beds:2, baths:1, nightly:205, cleaning:95, rating:4.95, reviews:117,
-    blurb:"A bright two-bedroom in the trees — fenced yard, fire pit, and an easy walk into town.",
-    longDesc:"An easygoing family base camp. Two bedrooms, a sunny living room, a fenced yard the kids (and dog) can run in, and a fire pit for s'mores after a day on the trail. Walk into Stanley for breakfast, drive to a half-dozen alpine lakes. Simple, comfortable, and close to everything.",
-    amenities:["Fenced yard","Fire pit","Full kitchen","Wi-Fi","Dogs welcome","Walk to town","Free parking","Pack-n-play"],
-    images:[U("1469022563428-aa04fef9f5a2"), U("1586023492125-27b2c045efd7"), LOCAL("keepprz-detail-linens.jpg"), U("1502672260266-1c1ef2d93688")],
-    booked:[["2026-07-10","2026-07-14"]],
-  },
-];
-
-const getListing = id => LISTINGS.find(l => l.id === id);
+/* ---- the one property (what Keepprz would store for this tenant) ---- */
+const CABIN = {
+  id:"borah", name:"The Borah Vista Cabin",
+  tagline:"A log cabin at the foot of Idaho's tallest peak",
+  location:"Mackay, Idaho · Lost River Valley", type:"Log cabin",
+  guests:2, beds:1, baths:1, nightly:185, cleaning:95, rating:4.98, reviews:64,
+  blurb:"A hand-built log cabin on open pasture, with the Lost River Range filling every window and nothing but sky after dark.",
+  longDesc:"This is the kind of quiet you drive a long way for. The cabin sits alone on fenced pasture with the Lost River Range — Borah Peak included — stacked up behind it. Inside: a queen bed piled with warm layers, a wood-burning stove for cold nights, and a window framing the mountains from your pillow. Outside: a covered porch with a picnic table, a fire pit, and a BBQ grill. No neighbors, no light pollution — the stargazing is the best in the lower 48.",
+  amenities:["Wood-burning stove","Queen bed","Covered front porch","Fire pit & BBQ grill","Lost River Range views","Wi-Fi","Coffee & kitchenette","Free parking","Dark-sky stargazing","Dogs welcome"],
+  images:[LOCAL("bv-ext-25.jpg"), LOCAL("bv-int-25.jpg"), LOCAL("bv-ext-45.jpg"), LOCAL("bv-int-05.jpg"), LOCAL("bv-int-45.jpg")],
+  booked:[["2026-06-19","2026-06-22"],["2026-07-03","2026-07-06"]],
+};
+const LISTINGS = [CABIN];
+const getListing = () => CABIN;
 
 /* ----------------------- date / pricing ----------------------- */
 const DAY = 86400000;
@@ -92,9 +57,9 @@ function quote(listing, ci, co){
 }
 
 /* ----------------------- booking state ----------------------- */
-function saveBooking(obj){ sessionStorage.setItem("sr_booking", JSON.stringify(obj)); }
-function loadBooking(){ try{ return JSON.parse(sessionStorage.getItem("sr_booking")); }catch(e){ return null; } }
-function genCode(){ return "SR-" + Math.random().toString(36).slice(2,7).toUpperCase(); }
+function saveBooking(obj){ sessionStorage.setItem("bv_booking", JSON.stringify(obj)); }
+function loadBooking(){ try{ return JSON.parse(sessionStorage.getItem("bv_booking")); }catch(e){ return null; } }
+function genCode(){ return "BV-" + Math.random().toString(36).slice(2,7).toUpperCase(); }
 
 /* ----------------------- page chrome ----------------------- */
 function mountChrome(active){
@@ -103,10 +68,10 @@ function mountChrome(active){
   <header class="site-header"><div class="wrap">
     <a class="brand" href="index.html"><span class="mark">${BRAND.initials}</span> ${BRAND.name}</a>
     <nav class="nav">
-      <a class="navlink ${active==='stays'?'on':''}" href="index.html#stays">Cabins</a>
+      <a class="navlink ${active==='stays'?'on':''}" href="index.html#cabin">The cabin</a>
       <a class="navlink ${active==='activities'?'on':''}" href="activities.html">Things to do</a>
       <a class="navlink" href="index.html#about">Our story</a>
-      <a class="btn btn-primary" href="index.html#stays">Book direct</a>
+      <a class="btn btn-primary" href="index.html#book">Book direct</a>
     </nav>
   </div></header>`;
   const slot = document.getElementById("chrome-top");
@@ -117,10 +82,10 @@ function mountChrome(active){
     <div class="cols">
       <div style="max-width:300px">
         <div class="brand"><span class="mark" style="width:30px;height:30px;font-size:.85rem">${BRAND.initials}</span> ${BRAND.name}</div>
-        <p class="muted" style="color:#bcae9b">Independently owned cabins in ${BRAND.town}. Book with us direct — no middleman, no platform fees, and you're talking straight to ${BRAND.host}.</p>
+        <p class="muted" style="color:#bcae9b">An independently owned log cabin in ${BRAND.town}. Book direct — no middleman, no platform fees, and you're talking straight to ${BRAND.host}.</p>
       </div>
       <div><div class="brand" style="font-size:1rem">Explore</div>
-        <p><a href="index.html#stays">All cabins</a><br><a href="activities.html">Things to do</a><br><a href="index.html#about">Our story</a></p></div>
+        <p><a href="index.html#cabin">The cabin</a><br><a href="activities.html">Things to do</a><br><a href="index.html#about">Our story</a></p></div>
       <div><div class="brand" style="font-size:1rem">Reach us</div>
         <p>${BRAND.email}<br>${BRAND.phone}<br>${BRAND.town}</p></div>
     </div>

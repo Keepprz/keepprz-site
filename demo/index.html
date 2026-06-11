@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sawtooth Ridge Cabins — Book direct in Stanley, Idaho</title>
-<meta name="description" content="Independently owned cabins in Stanley, Idaho. Book direct — no platform fees.">
+<title>Borah Vista — A log cabin in Mackay, Idaho. Book direct.</title>
+<meta name="description" content="An independently owned log cabin at the foot of Borah Peak in Mackay, Idaho. Book direct — no platform fees.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,37 +13,67 @@
 <body>
 <div id="chrome-top"></div>
 
-<!-- HERO -->
-<section class="hero" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1900&q=80')">
+<!-- VIDEO HERO -->
+<section class="vhero" id="top">
+  <div class="vslide on"><video class="vbg" src="assets/video/cabin-exterior.mp4" muted autoplay loop playsinline></video></div>
+  <div class="vslide"><video class="vbg" src="assets/video/cabin-interior.mp4" muted autoplay loop playsinline></video></div>
   <div class="wrap">
-    <div class="eyebrow">Stanley, Idaho · Under the Sawtooths</div>
-    <h1>Your cabin in the mountains. Booked direct.</h1>
-    <p class="sub">Four independently owned cabins, run by hand by Dana &amp; Mark. No platform fees, no middleman — just pick your dates and the price you see is the price you pay.</p>
+    <div>
+      <div class="eyebrow">Mackay, Idaho · Lost River Valley</div>
+      <h1>One cabin. Big sky. Booked direct.</h1>
+      <p class="sub">A hand-built log cabin alone on open pasture, with Idaho's tallest peaks out every window. No platform fees, no middleman — the price you see is the price you pay.</p>
+      <div class="ctas">
+        <a class="btn btn-primary btn-lg" href="#book">Check availability</a>
+        <a class="btn btn-ghost btn-lg" href="#cabin">See the cabin</a>
+      </div>
+    </div>
+    <div class="vframe">
+      <video class="vfg on" src="assets/video/cabin-exterior.mp4" poster="assets/img/bv-ext-05.jpg" muted autoplay loop playsinline></video>
+      <video class="vfg" src="assets/video/cabin-interior.mp4" poster="assets/img/bv-int-05.jpg" muted autoplay loop playsinline></video>
+      <div class="vlabel" id="vlabel">⛰ From the air</div>
+      <div class="vdots" id="vdots"><span class="on" onclick="goSlide(0)"></span><span onclick="goSlide(1)"></span></div>
+    </div>
   </div>
 </section>
 
-<!-- SEARCH -->
-<div class="wrap">
-  <div class="searchbar" id="search">
-    <div class="field"><label for="s-ci">Check in</label><input type="date" id="s-ci"></div>
-    <div class="field"><label for="s-co">Check out</label><input type="date" id="s-co"></div>
-    <div class="field"><label for="s-g">Guests</label>
-      <select id="s-g"><option>1</option><option>2</option><option selected>4</option><option>6</option><option>8</option><option>10</option></select>
-    </div>
-    <div class="go"><button class="btn btn-primary btn-lg" onclick="runSearch()">Check availability</button></div>
-  </div>
-  <p class="center muted" style="font-size:.86rem;margin-top:12px">Pick any dates above — availability and your total update instantly on every cabin. ✦ <a href="activities.html" style="color:var(--clay);font-weight:600">Just browsing? See things to do →</a></p>
-</div>
-
-<!-- LISTINGS -->
-<section class="section" id="stays">
+<!-- THE CABIN -->
+<section class="section" id="cabin">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">The cabins</div>
-      <h2 id="grid-title">Pick your place under the peaks</h2>
-      <p class="muted" id="grid-sub">Four cabins, each cleaned and looked after in person between every stay.</p>
+      <div class="eyebrow">The cabin</div>
+      <h2 id="cabin-name"></h2>
+      <p class="muted" id="cabin-tagline"></p>
     </div>
-    <div class="grid" id="grid"></div>
+
+    <div class="gallery" id="gallery"></div>
+
+    <div class="detail-cols" id="book">
+      <div>
+        <div class="facts" id="facts"></div>
+        <p id="long-desc" style="font-size:1.04rem"></p>
+        <h3 style="margin-top:28px">What's here</h3>
+        <div class="amenities" id="amenities"></div>
+        <h3 style="margin-top:32px">Where you are</h3>
+        <p class="muted">Twenty minutes from the Borah Peak trailhead, five from Mackay's main street, and an hour over Trail Creek from Sun Valley — but at night it's just you, the wood stove, and more stars than you've ever seen. <a href="activities.html" style="color:var(--clay);font-weight:600">See things to do →</a></p>
+      </div>
+
+      <!-- booking widget -->
+      <aside class="book" id="bookbox">
+        <div class="from"><b id="b-nightly"></b> <span>/ night · book direct</span></div>
+        <div class="dates">
+          <div class="d"><label for="b-ci">Check in</label><input type="date" id="b-ci"></div>
+          <div class="d"><label for="b-co">Check out</label><input type="date" id="b-co"></div>
+        </div>
+        <div class="selrow">
+          <label style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--ink-soft)">Guests</label>
+          <select id="b-g"><option>1</option><option selected>2</option></select>
+        </div>
+        <div id="b-status"></div>
+        <div class="summary" id="b-summary"></div>
+        <button class="btn btn-primary btn-block btn-lg" id="b-btn" onclick="reserve()">Reserve</button>
+        <p class="note">You won't be charged — this is a live demo.</p>
+      </aside>
+    </div>
   </div>
 </section>
 
@@ -52,12 +82,12 @@
   <div class="wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
     <div>
       <div class="eyebrow" style="color:var(--clay);text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;font-weight:700;margin-bottom:.6em">Our story</div>
-      <h2 style="font-size:2.1rem">Hosted by people, not a platform.</h2>
-      <p>We're Dana &amp; Mark. We've lived in Stanley for fifteen years, and we take care of every one of these cabins ourselves — the same hands that make the bed greet you at check-in. Booking direct means your money stays here in the valley, you reach a real person any time, and we can take care of you the way a 1-800 number never could.</p>
-      <p class="muted">Questions before you book? Call us at (208) 555-0147 or email stay@sawtoothridge.example.</p>
+      <h2 style="font-size:2.1rem">Hosted by a person, not a platform.</h2>
+      <p>I'm Jason. I built this place because the Lost River Valley is the most underrated corner of Idaho, and I wanted one perfect cabin to share it from. I look after every stay myself — the same hands that stack the firewood answer the phone. Booking direct means your money stays in the valley, you reach a real person any time, and I can take care of you the way a 1-800 number never could.</p>
+      <p class="muted">Questions before you book? Call me at (208) 555-0188 or email stay@borahvista.com.</p>
     </div>
     <div style="border-radius:16px;overflow:hidden;box-shadow:var(--shadow)">
-      <img src="assets/img/keepprz-key-handoff.jpg" onerror="this.src='https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80'" alt="Hosts in Stanley">
+      <img src="assets/img/bv-ext-45.jpg" alt="The Borah Vista cabin with the Lost River Range behind it">
     </div>
   </div>
 </section>
@@ -67,60 +97,76 @@
 <script src="assets/app.js"></script>
 <script>
 mountChrome('stays');
+const L = CABIN;
 
-// default search dates: 2 weeks out, 3 nights
+/* ---- hero crossfade ---- */
+const VLABELS = ["⛰ From the air", "🔥 Step inside"];
+let slide = 0, vtimer = setInterval(()=>goSlide(1-slide), 8000);
+function goSlide(n){
+  slide = n;
+  document.querySelectorAll('.vslide').forEach((el,i)=>el.classList.toggle('on', i===n));
+  document.querySelectorAll('.vfg').forEach((el,i)=>el.classList.toggle('on', i===n));
+  document.querySelectorAll('#vdots span').forEach((el,i)=>el.classList.toggle('on', i===n));
+  document.getElementById('vlabel').textContent = VLABELS[n];
+  clearInterval(vtimer); vtimer = setInterval(()=>goSlide(1-slide), 8000);
+}
+
+/* ---- cabin content ---- */
+document.getElementById('cabin-name').textContent = L.name;
+document.getElementById('cabin-tagline').textContent = L.tagline + " — sleeps " + L.guests + ", queen bed, wood stove.";
+document.getElementById('gallery').innerHTML = L.images.slice(0,5).map((src,i)=>
+  `<div class="g g${i}" style="background-image:url('${src}')"></div>`).join("");
+document.getElementById('facts').innerHTML =
+  `<span>👥 ${L.guests} guests</span><span>🛏 ${L.beds} queen bed</span><span>🛁 ${L.baths} bath</span><span>★ ${L.rating} · ${L.reviews} reviews</span>`;
+document.getElementById('long-desc').textContent = L.longDesc;
+document.getElementById('amenities').innerHTML = L.amenities.map(a=>`<div><span class="ic">✓</span>${a}</div>`).join("");
+document.getElementById('b-nightly').textContent = money(L.nightly);
+
+/* ---- booking widget ---- */
 (function seed(){
   const ci=new Date(Date.now()+14*864e5), co=new Date(Date.now()+17*864e5);
-  document.getElementById('s-ci').value=ci.toISOString().slice(0,10);
-  document.getElementById('s-co').value=co.toISOString().slice(0,10);
-  document.getElementById('s-ci').min=todayISO();
-  document.getElementById('s-co').min=todayISO();
+  document.getElementById('b-ci').value=ci.toISOString().slice(0,10);
+  document.getElementById('b-co').value=co.toISOString().slice(0,10);
+  document.getElementById('b-ci').min=todayISO();
+  document.getElementById('b-co').min=todayISO();
 })();
 
-function cardHTML(l, ci, co){
-  let availBlock = "";
-  const avail = isAvailable(l, ci, co);
-  if(avail===true){
-    const q=quote(l,ci,co);
-    availBlock=`<div class="avail ok">✓ Available ${fmtNice(ci)}–${fmtNice(co)} <span class="tot">${money(q.total)} total</span></div>`;
-  } else if(avail===false){
-    availBlock=`<div class="avail no">✕ Booked for those dates — try other nights</div>`;
+function refreshQuote(){
+  const ci=document.getElementById('b-ci').value, co=document.getElementById('b-co').value;
+  const st=document.getElementById('b-status'), sum=document.getElementById('b-summary'), btn=document.getElementById('b-btn');
+  const avail = isAvailable(L, ci, co);
+  if(avail===null){ st.innerHTML=""; sum.innerHTML=""; btn.disabled=true; btn.style.opacity=.6; btn.textContent="Pick your dates"; return; }
+  if(avail===false){
+    st.innerHTML = `<div class="avail no" style="margin:0 0 6px">✕ Booked ${fmtNice(ci)}–${fmtNice(co)} — try other nights</div>`;
+    sum.innerHTML=""; btn.disabled=true; btn.style.opacity=.6; btn.textContent="Those dates are taken";
+    return;
   }
-  const link = `listing.html?id=${l.id}` + (ci&&co?`&ci=${ci}&co=${co}`:"");
-  return `<a class="card" href="${link}">
-    <div class="ph" style="background-color:#d9cdba;background-image:url('${l.images[0]}')">
-      <span class="tag">★ ${l.rating} · ${l.reviews}</span>
-    </div>
-    <div class="body">
-      <div class="loc">⛰ ${l.location}</div>
-      <h3>${l.name}</h3>
-      <div class="meta">${l.type} · ${l.guests} guests · ${l.beds} bed · ${l.baths} bath</div>
-      ${availBlock}
-      <div class="price"><b>${money(l.nightly)}</b><span>/ night</span></div>
-    </div>
-  </a>`;
+  const q = quote(L, ci, co);
+  st.innerHTML = `<div class="avail ok" style="margin:0 0 6px">✓ Available ${fmtNice(ci)}–${fmtNice(co)}</div>`;
+  sum.innerHTML = `
+    <div class="row"><span>${money(q.nightly)} × ${q.nights} night${q.nights>1?'s':''}</span><span>${money(q.lodging)}</span></div>
+    <div class="row"><span>Cleaning fee</span><span>${money(q.cleaning)}</span></div>
+    <div class="row"><span>Taxes &amp; local fees</span><span>${money(q.tax)}</span></div>
+    <div class="row" style="color:var(--sage)"><span>Platform / service fee</span><span><s style="color:var(--ink-soft)">${money(q.total*0.14)}</s> $0</span></div>
+    <div class="row total"><span>Total</span><b>${money(q.total)}</b></div>`;
+  btn.disabled=false; btn.style.opacity=1;
+  btn.textContent = `Reserve ${fmtNice(ci)}–${fmtNice(co)}`;
 }
+document.getElementById('b-ci').addEventListener('change', refreshQuote);
+document.getElementById('b-co').addEventListener('change', refreshQuote);
+refreshQuote();
 
-function render(ci, co){
-  document.getElementById('grid').innerHTML = LISTINGS.map(l=>cardHTML(l,ci,co)).join("");
+function reserve(){
+  const ci=document.getElementById('b-ci').value, co=document.getElementById('b-co').value;
+  const g=+document.getElementById('b-g').value;
+  if(isAvailable(L,ci,co)!==true) return;
+  const q = quote(L, ci, co);
+  saveBooking({
+    listingId:L.id, listingName:L.name, location:L.location, image:L.images[0],
+    ci, co, guests:g, ...q
+  });
+  location.href = "checkout.html";
 }
-
-function runSearch(){
-  const ci=document.getElementById('s-ci').value, co=document.getElementById('s-co').value;
-  const g=+document.getElementById('s-g').value;
-  if(ci && co && nights(ci,co)<1){ alert("Check-out needs to be after check-in."); return; }
-  const matches = LISTINGS.filter(l=>l.guests>=g);
-  const title=document.getElementById('grid-title'), sub=document.getElementById('grid-sub');
-  if(ci&&co){
-    const avail=matches.filter(l=>isAvailable(l,ci,co));
-    title.textContent = `${avail.length} of ${LISTINGS.length} cabins open ${fmtNice(ci)}–${fmtNice(co)}`;
-    sub.textContent = `Showing every cabin that fits ${g} guests — available ones show your total up front.`;
-  }
-  document.getElementById('grid').innerHTML = matches.map(l=>cardHTML(l,ci,co)).join("");
-  document.getElementById('stays').scrollIntoView({behavior:'smooth'});
-}
-
-render(document.getElementById('s-ci').value, document.getElementById('s-co').value);
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>You're booked! — Sawtooth Ridge Cabins</title>
+<title>You're booked! — Borah Vista</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
 <script>
 mountChrome('stays');
 const b = loadBooking();
-if(!b || !b.code){ document.getElementById('main').innerHTML='<div class="panel center" style="margin-top:30px"><h3>Nothing booked yet</h3><a class="btn btn-primary" href="index.html#stays">See cabins</a></div>'; }
+if(!b || !b.code){ document.getElementById('main').innerHTML='<div class="panel center" style="margin-top:30px"><h3>Nothing booked yet</h3><a class="btn btn-primary" href="index.html#book">Check availability</a></div>'; }
 else {
   document.getElementById('main').innerHTML = `
   <div class="confirm-banner fade-in">
@@ -45,19 +45,19 @@ else {
 
   <div class="center" style="margin-top:40px;background:var(--sand);border-radius:16px;padding:34px 24px">
     <h3 style="font-size:1.4rem">Meanwhile, on the owner's side…</h3>
-    <p class="muted" style="max-width:48ch;margin:0 auto 20px">Dana &amp; Mark just got a new-booking alert, and the payout already shows in their dashboard — no spreadsheet, no Airbnb cut.</p>
+    <p class="muted" style="max-width:48ch;margin:0 auto 20px">Jason just got a new-booking alert, and the payout already shows in his dashboard — no spreadsheet, no Airbnb cut.</p>
     <a href="dashboard.html" class="btn btn-sage btn-lg">Open the owner dashboard →</a>
   </div>`;
 }
 
 function emailConfirm(){
   return `<div class="email fade-in">
-    <div class="ehead">From: Sawtooth Ridge Cabins &lt;stay@sawtoothridge.example&gt; · To: ${b.guestEmail}
+    <div class="ehead">From: Borah Vista &lt;${BRAND.email}&gt; · To: ${b.guestEmail}
       <div class="subj">✓ You're confirmed — ${b.listingName}, ${fmtNice(b.ci)}</div></div>
     <div class="ebanner" style="background-color:#d9cdba;background-image:url('${b.image}')"></div>
     <div class="ebody">
-      <h3>See you in the mountains, ${b.guestFirst}!</h3>
-      <p>Your stay at <b>${b.listingName}</b> is confirmed. We can't wait to host you. Here are your details:</p>
+      <h3>See you in the valley, ${b.guestFirst}!</h3>
+      <p>Your stay at <b>${b.listingName}</b> is confirmed. I can't wait to host you. Here are your details:</p>
       <table class="kv">
         <tr><td>Confirmation #</td><td>${b.code}</td></tr>
         <tr><td>Check in</td><td>${fmtNice(b.ci)}, after 4:00 PM</td></tr>
@@ -65,31 +65,31 @@ function emailConfirm(){
         <tr><td>Guests</td><td>${b.guests}</td></tr>
         <tr><td>Total paid</td><td>${money(b.total)}</td></tr>
       </table>
-      <p>You're booked <b>direct with us</b> — so if you need anything at all, just reply to this email or call ${BRAND.phone}. You'll get a real person (us!), not a help center.</p>
+      <p>You're booked <b>direct with me</b> — so if you need anything at all, just reply to this email or call ${BRAND.phone}. You'll get a real person (me!), not a help center.</p>
       <p class="muted" style="font-size:.9rem">Door code and exact directions arrive 3 days before you check in. Free cancellation up to 7 days prior.</p>
-      <p style="margin-top:18px">Warmly,<br><b>Dana &amp; Mark</b><br>Sawtooth Ridge Cabins</p>
+      <p style="margin-top:18px">Warmly,<br><b>Jason</b><br>Borah Vista</p>
     </div>
   </div>`;
 }
 function emailWelcome(){
   return `<div class="email fade-in">
-    <div class="ehead">From: Sawtooth Ridge Cabins &lt;stay@sawtoothridge.example&gt; · To: ${b.guestEmail}
-      <div class="subj">🏔 Your check-in details + things to do around Stanley</div></div>
-    <div class="ebanner" style="background-color:#d9cdba;background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=80')"></div>
+    <div class="ehead">From: Borah Vista &lt;${BRAND.email}&gt; · To: ${b.guestEmail}
+      <div class="subj">🏔 Your check-in details + things to do around Mackay</div></div>
+    <div class="ebanner" style="background-color:#d9cdba;background-image:url('assets/img/bv-ext-05.jpg')"></div>
     <div class="ebody">
       <h3>Almost time, ${b.guestFirst}! Here's everything you need.</h3>
-      <p><b>Getting in:</b> Your door code is <b>4-7-1-2</b>. The cabin's at ${b.location} — full driving directions and a parking photo are attached. Check-in any time after 4 PM; the place is yours.</p>
-      <p><b>This time of year</b> the Sawtooths are at their best — wildflowers out, lakes warm enough to swim, hot springs perfect at dusk. A few of our favorites:</p>
+      <p><b>Getting in:</b> Your door code is <b>4-7-1-2</b>. The cabin's just outside ${BRAND.town} — full driving directions and a gate photo are attached. Check-in any time after 4 PM; the place is yours.</p>
+      <p><b>This time of year</b> the Lost River Valley is at its best — the peaks still snow-capped, the river fishable, and the night sky unreal. A few of my favorites:</p>
       <table class="kv">
-        <tr><td>🥾 Sawtooth Lake hike</td><td>25 min away</td></tr>
-        <tr><td>🛶 Redfish Lake &amp; paddleboards</td><td>5 min away</td></tr>
-        <tr><td>♨️ Sunbeam Hot Springs</td><td>15 min away</td></tr>
-        <tr><td>🌊 Salmon River rafting</td><td>outfitters in town</td></tr>
+        <tr><td>⛰ Borah Peak trailhead</td><td>20 min away</td></tr>
+        <tr><td>🎣 Big Lost River &amp; Mackay Reservoir</td><td>5–10 min away</td></tr>
+        <tr><td>⛏ Mackay Mine Hill tour</td><td>15 min away</td></tr>
+        <tr><td>🌌 Stargazing</td><td>from the fire pit</td></tr>
       </table>
-      <p>Want the full list with maps? <a href="activities.html" style="color:var(--clay);font-weight:600">Here's our local guide →</a></p>
-      <p><b>Check-out</b> is by 11 AM — just strip the beds, start the dishwasher, and lock up. That's it.</p>
+      <p>Want the full list with maps? <a href="activities.html" style="color:var(--clay);font-weight:600">Here's my local guide →</a></p>
+      <p><b>Check-out</b> is by 11 AM — just strip the bed, close the stove damper, and lock up. That's it.</p>
       <p>Any questions before you arrive, reply right here. Safe travels!</p>
-      <p style="margin-top:18px">— <b>Dana &amp; Mark</b></p>
+      <p style="margin-top:18px">— <b>Jason</b></p>
     </div>
   </div>`;
 }
