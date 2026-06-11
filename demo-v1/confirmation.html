@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You're booked! — Borah Vista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+
+<main class="wrap section tight" id="main"></main>
+
+<div id="chrome-foot"></div>
+
+<script src="assets/app.js"></script>
+<script>
+mountChrome('stays');
+const b = loadBooking();
+if(!b || !b.code){ document.getElementById('main').innerHTML='<div class="panel center" style="margin-top:30px"><h3>Nothing booked yet</h3><a class="btn btn-primary" href="index.html#book">Check availability</a></div>'; }
+else {
+  document.getElementById('main').innerHTML = `
+  <div class="confirm-banner fade-in">
+    <div class="check">✓</div>
+    <h2 style="color:#fff;font-size:2rem">You're booked, ${b.guestFirst}!</h2>
+    <p style="opacity:.95;font-size:1.05rem">${b.listingName} · ${fmtNice(b.ci)} → ${fmtNice(b.co)} · ${money(b.total)} paid</p>
+    <p style="opacity:.85;font-size:.92rem">Confirmation <b>${b.code}</b> — a copy is on its way to ${b.guestEmail}</p>
+  </div>
+
+  <div class="center" style="margin:34px 0 0">
+    <div class="eyebrow" style="color:var(--clay);text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;font-weight:700">What happens next, automatically</div>
+    <h2 style="font-size:1.8rem">Two emails go out — here's exactly what the guest gets</h2>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="t1" onclick="show(1)">① Booking confirmation <span class="muted">(instant)</span></button>
+    <button class="tab" id="t2" onclick="show(2)">② Welcome &amp; local guide <span class="muted">(before check-in)</span></button>
+  </div>
+
+  <div id="email1">${emailConfirm()}</div>
+  <div id="email2" class="hidden">${emailWelcome()}</div>
+
+  <div class="center" style="margin-top:40px;background:var(--sand);border-radius:16px;padding:34px 24px">
+    <h3 style="font-size:1.4rem">Meanwhile, on the owner's side…</h3>
+    <p class="muted" style="max-width:48ch;margin:0 auto 20px">Jason just got a new-booking alert, and the payout already shows in his dashboard — no spreadsheet, no Airbnb cut.</p>
+    <a href="dashboard.html" class="btn btn-sage btn-lg">Open the owner dashboard →</a>
+  </div>`;
+}
+
+function emailConfirm(){
+  return `<div class="email fade-in">
+    <div class="ehead">From: Borah Vista &lt;${BRAND.email}&gt; · To: ${b.guestEmail}
+      <div class="subj">✓ You're confirmed — ${b.listingName}, ${fmtNice(b.ci)}</div></div>
+    <div class="ebanner" style="background-color:#d9cdba;background-image:url('${b.image}')"></div>
+    <div class="ebody">
+      <h3>See you in the valley, ${b.guestFirst}!</h3>
+      <p>Your stay at <b>${b.listingName}</b> is confirmed. I can't wait to host you. Here are your details:</p>
+      <table class="kv">
+        <tr><td>Confirmation #</td><td>${b.code}</td></tr>
+        <tr><td>Check in</td><td>${fmtNice(b.ci)}, after 4:00 PM</td></tr>
+        <tr><td>Check out</td><td>${fmtNice(b.co)}, by 11:00 AM</td></tr>
+        <tr><td>Guests</td><td>${b.guests}</td></tr>
+        <tr><td>Total paid</td><td>${money(b.total)}</td></tr>
+      </table>
+      <p>You're booked <b>direct with me</b> — so if you need anything at all, just reply to this email or call ${BRAND.phone}. You'll get a real person (me!), not a help center.</p>
+      <p class="muted" style="font-size:.9rem">Door code and exact directions arrive 3 days before you check in. Free cancellation up to 7 days prior.</p>
+      <p style="margin-top:18px">Warmly,<br><b>Jason</b><br>Borah Vista</p>
+    </div>
+  </div>`;
+}
+function emailWelcome(){
+  return `<div class="email fade-in">
+    <div class="ehead">From: Borah Vista &lt;${BRAND.email}&gt; · To: ${b.guestEmail}
+      <div class="subj">🏔 Your check-in details + things to do around Mackay</div></div>
+    <div class="ebanner" style="background-color:#d9cdba;background-image:url('assets/img/bv-ext-05.jpg')"></div>
+    <div class="ebody">
+      <h3>Almost time, ${b.guestFirst}! Here's everything you need.</h3>
+      <p><b>Getting in:</b> Your door code is <b>4-7-1-2</b>. The cabin's just outside ${BRAND.town} — full driving directions and a gate photo are attached. Check-in any time after 4 PM; the place is yours.</p>
+      <p><b>This time of year</b> the Lost River Valley is at its best — the peaks still snow-capped, the river fishable, and the night sky unreal. A few of my favorites:</p>
+      <table class="kv">
+        <tr><td>⛰ Borah Peak trailhead</td><td>20 min away</td></tr>
+        <tr><td>🎣 Big Lost River &amp; Mackay Reservoir</td><td>5–10 min away</td></tr>
+        <tr><td>⛏ Mackay Mine Hill tour</td><td>15 min away</td></tr>
+        <tr><td>🌌 Stargazing</td><td>from the fire pit</td></tr>
+      </table>
+      <p>Want the full list with maps? <a href="activities.html" style="color:var(--clay);font-weight:600">Here's my local guide →</a></p>
+      <p><b>Check-out</b> is by 11 AM — just strip the bed, close the stove damper, and lock up. That's it.</p>
+      <p>Any questions before you arrive, reply right here. Safe travels!</p>
+      <p style="margin-top:18px">— <b>Jason</b></p>
+    </div>
+  </div>`;
+}
+function show(n){
+  document.getElementById('email1').classList.toggle('hidden',n!==1);
+  document.getElementById('email2').classList.toggle('hidden',n!==2);
+  document.getElementById('t1').classList.toggle('active',n===1);
+  document.getElementById('t2').classList.toggle('active',n===2);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Borah Vista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+
+<main class="wrap section tight">
+  <a href="#" onclick="history.back();return false;" class="muted" style="font-size:.9rem">← Back to cabin</a>
+  <h1 style="font-size:clamp(1.9rem,4vw,2.6rem);margin-top:10px">Confirm &amp; book</h1>
+  <p class="muted" id="lead">Booking direct with Jason — no platform in the middle.</p>
+
+  <div class="co-cols" style="margin-top:24px">
+    <!-- left: guest + payment -->
+    <div>
+      <div class="panel">
+        <h3>Your details</h3>
+        <div class="formgrid">
+          <div class="fld"><label>First name</label><input id="f-first" value="Jordan"></div>
+          <div class="fld"><label>Last name</label><input id="f-last" value="Avery"></div>
+          <div class="fld full"><label>Email</label><input id="f-email" type="email" value="jordan.avery@example.com"></div>
+          <div class="fld full"><label>Phone</label><input id="f-phone" type="tel" value="(206) 555-0193"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <h3>Payment</h3>
+        <p class="muted" style="font-size:.86rem;margin-top:-4px">Demo only — no real card is processed.</p>
+        <div class="formgrid">
+          <div class="fld full"><label>Card number</label><input id="f-card" value="4242 4242 4242 4242"></div>
+          <div class="fld"><label>Expiry</label><input value="04 / 28"></div>
+          <div class="fld"><label>CVC</label><input value="123"></div>
+          <div class="fld full"><label>Billing ZIP</label><input value="98101"></div>
+        </div>
+        <div class="lock">🔒 Secure direct payment — your money goes straight to the host</div>
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg" style="margin-top:20px" onclick="confirmBooking()" id="pay-btn">Confirm booking · <span id="pay-amt"></span></button>
+      <p class="note">By booking you agree to the cabin's house rules. Free cancellation up to 7 days before check-in.</p>
+    </div>
+
+    <!-- right: summary -->
+    <div class="panel summary-card" id="sum"></div>
+  </div>
+</main>
+
+<div id="chrome-foot"></div>
+
+<script src="assets/app.js"></script>
+<script>
+mountChrome('stays');
+const b = loadBooking();
+if(!b){ document.querySelector('main').innerHTML='<div class="panel" style="text-align:center;margin-top:30px"><h3>No booking in progress</h3><p class="muted">Pick your dates first.</p><a class="btn btn-primary" href="index.html#book">Check availability</a></div>'; }
+else {
+  document.getElementById('pay-amt').textContent = money(b.total);
+  document.getElementById('sum').innerHTML = `
+    <div class="ph" style="background-color:#d9cdba;background-image:url('${b.image}')"></div>
+    <h3 style="font-size:1.2rem;margin-bottom:.1em">${b.listingName}</h3>
+    <div class="muted" style="font-size:.88rem">⛰ ${b.location}</div>
+    <div class="facts" style="font-size:.9rem">
+      <span>📅 ${fmtNice(b.ci)} → ${fmtNice(b.co)}</span><span>👥 ${b.guests} guests</span>
+    </div>
+    <div class="summary">
+      <div class="row"><span>${money(b.nightly)} × ${b.nights} night${b.nights>1?'s':''}</span><span>${money(b.lodging)}</span></div>
+      <div class="row"><span>Cleaning fee</span><span>${money(b.cleaning)}</span></div>
+      <div class="row"><span>Taxes &amp; local fees</span><span>${money(b.tax)}</span></div>
+      <div class="row" style="color:var(--sage)"><span>Platform / service fee</span><span>$0</span></div>
+      <div class="row total"><span>Total</span><b>${money(b.total)}</b></div>
+    </div>
+    <p class="note" style="text-align:left;color:var(--sage)">You're saving about ${money(b.total*0.14)} vs. booking the same cabin on a big platform.</p>`;
+}
+
+function confirmBooking(){
+  const btn=document.getElementById('pay-btn');
+  btn.textContent="Processing…"; btn.disabled=true; btn.style.opacity=.7;
+  const booking = {...b,
+    code: genCode(),
+    guestName: document.getElementById('f-first').value+" "+document.getElementById('f-last').value,
+    guestFirst: document.getElementById('f-first').value,
+    guestEmail: document.getElementById('f-email').value,
+    guestPhone: document.getElementById('f-phone').value,
+    bookedAt: new Date().toISOString(),
+  };
+  saveBooking(booking);
+  setTimeout(()=>location.href="confirmation.html", 900);
+}
+</script>
+</body>
+</html>
