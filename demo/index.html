@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sawtooth Ridge Cabins — Book direct in Stanley, Idaho</title>
+<meta name="description" content="Independently owned cabins in Stanley, Idaho. Book direct — no platform fees.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+
+<!-- HERO -->
+<section class="hero" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1900&q=80')">
+  <div class="wrap">
+    <div class="eyebrow">Stanley, Idaho · Under the Sawtooths</div>
+    <h1>Your cabin in the mountains. Booked direct.</h1>
+    <p class="sub">Four independently owned cabins, run by hand by Dana &amp; Mark. No platform fees, no middleman — just pick your dates and the price you see is the price you pay.</p>
+  </div>
+</section>
+
+<!-- SEARCH -->
+<div class="wrap">
+  <div class="searchbar" id="search">
+    <div class="field"><label for="s-ci">Check in</label><input type="date" id="s-ci"></div>
+    <div class="field"><label for="s-co">Check out</label><input type="date" id="s-co"></div>
+    <div class="field"><label for="s-g">Guests</label>
+      <select id="s-g"><option>1</option><option>2</option><option selected>4</option><option>6</option><option>8</option><option>10</option></select>
+    </div>
+    <div class="go"><button class="btn btn-primary btn-lg" onclick="runSearch()">Check availability</button></div>
+  </div>
+  <p class="center muted" style="font-size:.86rem;margin-top:12px">Pick any dates above — availability and your total update instantly on every cabin. ✦ <a href="activities.html" style="color:var(--clay);font-weight:600">Just browsing? See things to do →</a></p>
+</div>
+
+<!-- LISTINGS -->
+<section class="section" id="stays">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The cabins</div>
+      <h2 id="grid-title">Pick your place under the peaks</h2>
+      <p class="muted" id="grid-sub">Four cabins, each cleaned and looked after in person between every stay.</p>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section tight" id="about" style="background:var(--sand)">
+  <div class="wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+    <div>
+      <div class="eyebrow" style="color:var(--clay);text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;font-weight:700;margin-bottom:.6em">Our story</div>
+      <h2 style="font-size:2.1rem">Hosted by people, not a platform.</h2>
+      <p>We're Dana &amp; Mark. We've lived in Stanley for fifteen years, and we take care of every one of these cabins ourselves — the same hands that make the bed greet you at check-in. Booking direct means your money stays here in the valley, you reach a real person any time, and we can take care of you the way a 1-800 number never could.</p>
+      <p class="muted">Questions before you book? Call us at (208) 555-0147 or email stay@sawtoothridge.example.</p>
+    </div>
+    <div style="border-radius:16px;overflow:hidden;box-shadow:var(--shadow)">
+      <img src="assets/img/keepprz-key-handoff.jpg" onerror="this.src='https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80'" alt="Hosts in Stanley">
+    </div>
+  </div>
+</section>
+
+<div id="chrome-foot"></div>
+
+<script src="assets/app.js"></script>
+<script>
+mountChrome('stays');
+
+// default search dates: 2 weeks out, 3 nights
+(function seed(){
+  const ci=new Date(Date.now()+14*864e5), co=new Date(Date.now()+17*864e5);
+  document.getElementById('s-ci').value=ci.toISOString().slice(0,10);
+  document.getElementById('s-co').value=co.toISOString().slice(0,10);
+  document.getElementById('s-ci').min=todayISO();
+  document.getElementById('s-co').min=todayISO();
+})();
+
+function cardHTML(l, ci, co){
+  let availBlock = "";
+  const avail = isAvailable(l, ci, co);
+  if(avail===true){
+    const q=quote(l,ci,co);
+    availBlock=`<div class="avail ok">✓ Available ${fmtNice(ci)}–${fmtNice(co)} <span class="tot">${money(q.total)} total</span></div>`;
+  } else if(avail===false){
+    availBlock=`<div class="avail no">✕ Booked for those dates — try other nights</div>`;
+  }
+  const link = `listing.html?id=${l.id}` + (ci&&co?`&ci=${ci}&co=${co}`:"");
+  return `<a class="card" href="${link}">
+    <div class="ph" style="background-color:#d9cdba;background-image:url('${l.images[0]}')">
+      <span class="tag">★ ${l.rating} · ${l.reviews}</span>
+    </div>
+    <div class="body">
+      <div class="loc">⛰ ${l.location}</div>
+      <h3>${l.name}</h3>
+      <div class="meta">${l.type} · ${l.guests} guests · ${l.beds} bed · ${l.baths} bath</div>
+      ${availBlock}
+      <div class="price"><b>${money(l.nightly)}</b><span>/ night</span></div>
+    </div>
+  </a>`;
+}
+
+function render(ci, co){
+  document.getElementById('grid').innerHTML = LISTINGS.map(l=>cardHTML(l,ci,co)).join("");
+}
+
+function runSearch(){
+  const ci=document.getElementById('s-ci').value, co=document.getElementById('s-co').value;
+  const g=+document.getElementById('s-g').value;
+  if(ci && co && nights(ci,co)<1){ alert("Check-out needs to be after check-in."); return; }
+  const matches = LISTINGS.filter(l=>l.guests>=g);
+  const title=document.getElementById('grid-title'), sub=document.getElementById('grid-sub');
+  if(ci&&co){
+    const avail=matches.filter(l=>isAvailable(l,ci,co));
+    title.textContent = `${avail.length} of ${LISTINGS.length} cabins open ${fmtNice(ci)}–${fmtNice(co)}`;
+    sub.textContent = `Showing every cabin that fits ${g} guests — available ones show your total up front.`;
+  }
+  document.getElementById('grid').innerHTML = matches.map(l=>cardHTML(l,ci,co)).join("");
+  document.getElementById('stays').scrollIntoView({behavior:'smooth'});
+}
+
+render(document.getElementById('s-ci').value, document.getElementById('s-co').value);
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cabin — Sawtooth Ridge Cabins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="chrome-top"></div>
+
+<main class="wrap section tight" id="main"><!-- filled by JS --></main>
+
+<div id="chrome-foot"></div>
+
+<!-- lightbox -->
+<div id="lb" class="hidden" style="position:fixed;inset:0;background:rgba(20,15,12,.92);z-index:100;display:flex;align-items:center;justify-content:center;padding:30px" onclick="this.classList.add('hidden')">
+  <img id="lb-img" style="max-width:92%;max-height:90%;border-radius:12px;box-shadow:var(--shadow)">
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+mountChrome('stays');
+const params = new URLSearchParams(location.search);
+const l = getListing(params.get('id')) || LISTINGS[0];
+let ci = params.get('ci') || "", co = params.get('co') || "";
+document.title = `${l.name} — Sawtooth Ridge Cabins`;
+
+const amenIcons = ["✦","✦","✦","✦","✦","✦","✦","✦"];
+
+function galleryHTML(){
+  const imgs=l.images;
+  let cells="";
+  for(let i=0;i<5;i++){
+    const src=imgs[i]||imgs[imgs.length-1];
+    cells+=`<div class="g g${i}" style="background-color:#d9cdba;background-image:url('${src}')" onclick="openLB('${src.replace(/'/g,"")}')"></div>`;
+  }
+  return `<div class="gallery">${cells}</div>`;
+}
+
+function render(){
+  document.getElementById('main').innerHTML = `
+    <a href="index.html#stays" class="muted" style="font-size:.9rem">← All cabins</a>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-top:10px">
+      <div>
+        <h1 style="font-size:clamp(2rem,4vw,3rem);margin-bottom:.15em">${l.name}</h1>
+        <div class="muted">⛰ ${l.location} · ★ ${l.rating} (${l.reviews} reviews) · Superhost-level care</div>
+      </div>
+    </div>
+    ${galleryHTML()}
+    <div class="detail-cols">
+      <div>
+        <h2 style="font-size:1.6rem">${l.tagline}</h2>
+        <div class="facts">
+          <span>👥 ${l.guests} guests</span><span>🛏 ${l.beds} bedrooms</span>
+          <span>🛁 ${l.baths} baths</span><span>🏡 ${l.type}</span>
+        </div>
+        <p style="font-size:1.05rem">${l.longDesc}</p>
+
+        <h3 style="margin-top:30px;font-size:1.3rem">What this place offers</h3>
+        <div class="amenities">
+          ${l.amenities.map((a,i)=>`<div><span class="ic">${amenIcons[i%amenIcons.length]}</span> ${a}</div>`).join("")}
+        </div>
+
+        <h3 style="margin-top:30px;font-size:1.3rem">Booking direct, the way it should be</h3>
+        <p class="muted">No service fees, no platform markup. You book straight with Dana &amp; Mark, you get a real phone number, and check-in details land in your inbox the moment you reserve. The same hosts clean and check the cabin before every single stay.</p>
+
+        <h3 style="margin-top:30px;font-size:1.3rem">In the area</h3>
+        <p class="muted">Redfish Lake, alpine trailheads, natural hot springs, and Salmon River whitewater are all minutes away. <a href="activities.html" style="color:var(--clay);font-weight:600">See things to do →</a></p>
+      </div>
+
+      <!-- BOOKING WIDGET -->
+      <div>
+        <div class="book">
+          <div class="from"><b>${money(l.nightly)}</b> / night</div>
+          <div class="dates">
+            <div class="d"><label>Check in</label><input type="date" id="b-ci" value="${ci}"></div>
+            <div class="d"><label>Check out</label><input type="date" id="b-co" value="${co}"></div>
+          </div>
+          <div class="selrow"><label style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--ink-soft)">Guests</label>
+            <select id="b-g">${[1,2,3,4,5,6,7,8,9,10].filter(n=>n<=l.guests).map(n=>`<option ${n===Math.min(2,l.guests)?'selected':''}>${n}</option>`).join("")}</select>
+          </div>
+          <div id="b-out"></div>
+          <button class="btn btn-primary btn-block btn-lg" id="b-btn" onclick="goBook()">Check availability</button>
+          <p class="note">You won't be charged yet · No platform fees ever</p>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('b-ci').min=todayISO();
+  document.getElementById('b-co').min=todayISO();
+  document.getElementById('b-ci').addEventListener('change',updateWidget);
+  document.getElementById('b-co').addEventListener('change',updateWidget);
+  updateWidget();
+}
+
+function updateWidget(){
+  ci=document.getElementById('b-ci').value; co=document.getElementById('b-co').value;
+  const out=document.getElementById('b-out'); const btn=document.getElementById('b-btn');
+  const avail=isAvailable(l,ci,co);
+  if(avail===null){ out.innerHTML=`<p class="note" style="margin:6px 0 14px">Add your dates to see the total.</p>`; btn.textContent="Check availability"; btn.disabled=false; return; }
+  if(avail===false){
+    out.innerHTML=`<div class="avail no" style="margin:6px 0 14px">✕ Not available ${fmtNice(ci)}–${fmtNice(co)}. Try different nights.</div>`;
+    btn.textContent="Choose other dates"; btn.disabled=true; btn.style.opacity=.55; return;
+  }
+  const q=quote(l,ci,co);
+  out.innerHTML=`<div class="summary fade-in">
+    <div class="row"><span>${money(l.nightly)} × ${q.nights} night${q.nights>1?'s':''}</span><span>${money(q.lodging)}</span></div>
+    <div class="row"><span>Cleaning fee</span><span>${money(q.cleaning)}</span></div>
+    <div class="row"><span>Taxes &amp; local fees</span><span>${money(q.tax)}</span></div>
+    <div class="row" style="color:var(--sage)"><span>Platform / service fee</span><span><s style="color:var(--ink-soft)">${money(q.total*0.14)}</s> $0</span></div>
+    <div class="row total"><span>Total</span><b>${money(q.total)}</b></div>
+  </div>`;
+  btn.textContent=`Reserve ${fmtNice(ci)}–${fmtNice(co)}`; btn.disabled=false; btn.style.opacity=1;
+}
+
+function goBook(){
+  if(isAvailable(l,ci,co)!==true){ alert("Please pick available dates first."); return; }
+  const q=quote(l,ci,co);
+  saveBooking({listingId:l.id, listingName:l.name, image:l.images[0], location:l.location,
+    ci, co, guests:+document.getElementById('b-g').value, ...q});
+  location.href="checkout.html";
+}
+
+function openLB(src){ document.getElementById('lb-img').src=src; document.getElementById('lb').classList.remove('hidden'); }
+render();
+</script>
+</body>
+</html>

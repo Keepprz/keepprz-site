@@ -169,6 +169,37 @@
     .dash-kpi .n{font-size:21px;}
     .dash-kpi .l{font-size:11.5px;}
   }
+
+  /* demo test-drive */
+  .demo-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:42px; align-items:start;}
+  .demo-card .browser{height:100%;}
+  .dimg{height:128px; background-size:cover; background-position:center; background-color:#E6DBCA;}
+  .dl{padding:16px 17px 18px;}
+  .dl .loc{font-size:12.5px; color:var(--ink-soft); margin-bottom:3px;}
+  .dl h4{font-family:var(--serif); font-size:18px; font-weight:600; line-height:1.15;}
+  .dl .meta{font-size:12.5px; color:var(--ink-soft); margin-top:3px;}
+  .dpill-ok{display:inline-block; background:var(--sage-soft); color:var(--sage); font-size:12px; font-weight:600; padding:5px 10px; border-radius:8px; margin:11px 0 9px;}
+  .dprice{font-family:var(--serif); font-size:21px; font-weight:600;}
+  .dprice span{font-family:var(--sans); font-size:13px; font-weight:400; color:var(--ink-soft);}
+  .drow{display:flex; justify-content:space-between; font-size:13px; padding:5px 0; color:var(--ink-soft);}
+  .drow .free{color:var(--sage); font-weight:600;}
+  .drow s{color:#B6A88F;}
+  .drow.tot{border-top:1px solid rgba(42,36,34,0.1); margin-top:5px; padding-top:10px; color:var(--ink); font-weight:600; font-size:15px;}
+  .drow.tot b{font-family:var(--serif);}
+  .ddates{display:grid; grid-template-columns:1fr 1fr; border:1px solid rgba(42,36,34,0.12); border-radius:10px; overflow:hidden; margin-bottom:13px;}
+  .ddates div{padding:9px 11px;}
+  .ddates div+div{border-left:1px solid rgba(42,36,34,0.12);}
+  .ddates .k{font-size:10px; text-transform:uppercase; letter-spacing:0.07em; color:var(--ink-soft); font-weight:600;}
+  .ddates .vv{font-size:13.5px; margin-top:2px;}
+  .dbtn-mock{display:block; text-align:center; background:var(--terracotta); color:var(--cream); border-radius:9px; padding:10px; font-size:13px; font-weight:500; margin-top:13px;}
+  .dcheck{width:52px; height:52px; border-radius:50%; background:var(--sage-soft); color:var(--sage); display:flex; align-items:center; justify-content:center; font-size:25px; margin:6px auto 12px;}
+  .dconf{text-align:center; padding:22px 18px;}
+  .dconf .code{display:inline-block; background:var(--sand); border-radius:7px; padding:3px 11px; font-size:13px; margin-top:8px;}
+  .dconf .sent{font-size:12.5px; color:var(--ink-soft); margin-top:12px;}
+  .dcap{text-align:center; font-size:13.5px; color:var(--ink-soft); margin-top:13px;}
+  .demo-cta{text-align:center; margin-top:44px; display:flex; gap:18px; align-items:center; justify-content:center; flex-wrap:wrap;}
+  .demo-cta .btn-lg{padding:15px 30px; font-size:16px;}
+  @media(max-width:860px){ .demo-grid{grid-template-columns:1fr; gap:18px;} }
 </style>
 </head>
 <body>
@@ -406,6 +437,77 @@
       </ul>
       <a class="btn" href="tel:+18083491077">Book a call</a>
       <p class="price-fine">Guests pay you directly through your own account. You pay your own cleaner. We handle everything in between.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO TEST DRIVE -->
+<section id="demo">
+  <div class="wrap center">
+    <span class="eyebrow">See it in action</span>
+    <h2>Don't just take our word for it. Take it for a test drive.</h2>
+    <p class="section-lead">Here's a real, working example of a Keepprz direct-booking site — the same experience your guests would have. Pick your dates, watch the price total up instantly, and book a stay. Then peek at the owner dashboard to see it land on your side.</p>
+  </div>
+  <div class="wrap">
+    <div class="demo-grid">
+
+      <!-- 1. Browse -->
+      <div class="demo-card">
+        <div class="browser">
+          <div class="browser-bar"><span class="b-dot"></span><span class="b-dot"></span><span class="b-dot"></span><span class="url">sawtoothridge.com</span></div>
+          <div class="dimg" style="background-image:url('images/web/keepprz-hero-home.jpg')"></div>
+          <div class="dl">
+            <div class="loc">⛰ Redfish Lake, Stanley ID</div>
+            <h4>The Redfish A-Frame</h4>
+            <div class="meta">A-frame · 6 guests · 3 bed · 2 bath</div>
+            <span class="dpill-ok">✓ Available Jun 25–28 · $1,056 total</span>
+            <div class="dprice">$289 <span>/ night</span></div>
+          </div>
+        </div>
+        <p class="dcap">Browse the cabins — price &amp; availability up front.</p>
+      </div>
+
+      <!-- 2. Instant price -->
+      <div class="demo-card">
+        <div class="browser">
+          <div class="browser-bar"><span class="b-dot"></span><span class="b-dot"></span><span class="b-dot"></span><span class="url">sawtoothridge.com/book</span></div>
+          <div class="dl">
+            <div class="ddates">
+              <div><div class="k">Check in</div><div class="vv">Jun 25</div></div>
+              <div><div class="k">Check out</div><div class="vv">Jun 28</div></div>
+            </div>
+            <div class="drow"><span>$289 × 3 nights</span><span>$867</span></div>
+            <div class="drow"><span>Cleaning fee</span><span>$120</span></div>
+            <div class="drow"><span>Taxes &amp; local fees</span><span>$69</span></div>
+            <div class="drow"><span>Platform / service fee</span><span><s>$148</s> <span class="free">$0</span></span></div>
+            <div class="drow tot"><span>Total</span><b>$1,056</b></div>
+            <span class="dbtn-mock">Reserve Jun 25–28</span>
+          </div>
+        </div>
+        <p class="dcap">Pick dates — the total updates instantly. No platform fee.</p>
+      </div>
+
+      <!-- 3. Booked -->
+      <div class="demo-card">
+        <div class="browser">
+          <div class="browser-bar"><span class="b-dot"></span><span class="b-dot"></span><span class="b-dot"></span><span class="url">sawtoothridge.com/booked</span></div>
+          <div class="dimg" style="background-image:url('images/web/keepprz-detail-coffee.jpg'); height:96px;"></div>
+          <div class="dconf">
+            <div class="dcheck">✓</div>
+            <h4 style="font-family:var(--serif); font-size:19px; font-weight:600;">You're booked!</h4>
+            <div class="meta" style="font-size:13px; color:var(--ink-soft); margin-top:4px;">The Redfish A-Frame · Jun 25 → 28</div>
+            <div class="code">Confirmation SR-VYLK6</div>
+            <div class="sent">✉ Confirmation + welcome emails sent automatically</div>
+          </div>
+        </div>
+        <p class="dcap">Book, pay, done — guest &amp; owner both get the email.</p>
+      </div>
+
+    </div>
+
+    <div class="demo-cta">
+      <a class="btn btn-lg" href="/demo/">Take the demo for a test drive →</a>
+      <a class="ghost" href="/demo/dashboard.html">Or see the owner's dashboard</a>
     </div>
   </div>
 </section>

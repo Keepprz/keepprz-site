@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner Dashboard — Sawtooth Ridge Cabins · Keepprz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="dash">
+<div class="topbar">
+  <div class="brand"><span class="mark">SR</span> Sawtooth Ridge <span style="color:#a89a8c;font-weight:400;font-size:.9rem">· Owner dashboard</span></div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <span style="font-size:.85rem;color:#a89a8c">Dana &amp; Mark Hollis</span>
+    <a href="index.html" class="btn btn-ghost" style="color:#f3ece1;border-color:#4a403a;padding:.5em 1em;font-size:.88rem">View guest site ↗</a>
+  </div>
+</div>
+
+<div class="dash-wrap">
+  <div id="toast-slot"></div>
+
+  <h2 style="margin-top:6px">This month at a glance</h2>
+  <div class="kpis" id="kpis"></div>
+
+  <h2 style="margin-top:30px">Upcoming bookings</h2>
+  <div style="overflow-x:auto">
+    <table class="dtable" id="bk">
+      <thead><tr><th>Guest</th><th>Cabin</th><th>Dates</th><th>Guests</th><th>Payout</th><th>Status</th></tr></thead>
+      <tbody id="bk-body"></tbody>
+    </table>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px" id="lower"></div>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+const nb = loadBooking();   // the booking the visitor just made (if any)
+
+// seed of existing bookings already on the books
+let rows = [
+  {who:"Priya & Sam Rao", cabin:"Sawtooth Lodge", dates:"Jun 20 → Jun 24", g:8, payout:2274, status:"paid"},
+  {who:"The Delgado family", cabin:"The Redfish A-Frame", dates:"Jul 3 → Jul 7", g:6, payout:1391, status:"paid"},
+  {who:"Marcus Lee", cabin:"Salmon River Studio", dates:"Aug 1 → Aug 5", g:2, payout:786, status:"upcoming"},
+  {who:"Erin Caldwell", cabin:"Pinegrove Bungalow", dates:"Jul 10 → Jul 14", g:4, payout:1003, status:"upcoming"},
+];
+
+// host keeps the full guest payment minus the flat Keepprz fee ($100/mo + $20/booking) — never a %
+let newRow=null;
+if(nb && nb.code){
+  newRow={who:nb.guestName, cabin:nb.listingName, dates:`${fmtNice(nb.ci)} → ${fmtNice(nb.co)}`, g:nb.guests, payout:nb.total, status:"new", code:nb.code, email:nb.guestEmail};
+  rows = [newRow, ...rows];
+
+  document.getElementById('toast-slot').innerHTML = `
+    <div class="toast fade-in"><span class="dot"></span><div>
+      <b style="color:#fff">New booking just came in — ${nb.guestName}</b>
+      <div style="color:#cdbfac;font-size:.9rem;margin-top:2px">${nb.listingName} · ${fmtNice(nb.ci)} → ${fmtNice(nb.co)} · ${money(nb.total)} collected · confirmation ${nb.code}. Guest confirmation + host alert emails sent automatically.</div>
+    </div>`;
+}
+
+// KPIs
+const gross = rows.reduce((s,r)=>s+r.payout,0);
+const bookingsCount = rows.length;
+const keepprzFee = 100 + bookingsCount*20;     // flat: $100/mo + $20 per booking
+const netToOwner = gross - keepprzFee;
+const kpis=[
+  {lab:"Bookings this month", val:bookingsCount, delta:nb&&nb.code?"+1 just now":"on pace"},
+  {lab:"Gross collected", val:money(gross), cls:"green", delta:"direct, 0% platform cut"},
+  {lab:"Your Keepprz fee", val:money(keepprzFee), delta:"$100 + $20×"+bookingsCount+" · flat, never a %"},
+  {lab:"You keep", val:money(netToOwner), cls:"green", delta:Math.round(netToOwner/gross*100)+"% of every dollar"},
+];
+document.getElementById('kpis').innerHTML = kpis.map(k=>`
+  <div class="kpi"><div class="lab">${k.lab}</div><div class="val ${k.cls||''}">${k.val}</div><div class="delta">${k.delta}</div></div>`).join("");
+
+// table
+const statusPill = s => s==="new" ? '<span class="pill newp">● New</span>'
+  : s==="paid" ? '<span class="pill paid">Paid</span>'
+  : '<span class="pill up">Upcoming</span>';
+document.getElementById('bk-body').innerHTML = rows.map(r=>`
+  <tr class="${r.status==='new'?'new':''}">
+    <td class="who">${r.who}${r.status==='new'?' <span class="muted" style="color:#a89a8c;font-weight:400">· '+r.code+'</span>':''}</td>
+    <td>${r.cabin}</td><td>${r.dates}</td><td>${r.g}</td>
+    <td style="font-family:'Fraunces',serif">${money(r.payout)}</td>
+    <td>${statusPill(r.status)}</td>
+  </tr>`).join("");
+
+// lower cards: cleaning turnover + the math
+document.getElementById('lower').innerHTML = `
+  <div class="kpi" style="background:#2b2522">
+    <div class="lab">🧹 Cleaning turnover</div>
+    <h3 style="color:#fff;font-size:1.15rem;margin:.4em 0">${newRow?newRow.cabin:'The Redfish A-Frame'} — checkout ${newRow?newRow.dates.split('→')[1].trim():'Jul 7'}</h3>
+    <p style="color:#cdbfac;font-size:.92rem;margin:0">Cleaner auto-assigned and notified. Photo checklist due at turnover — AI-verified before the next guest. <span style="color:#9fcf8a">On schedule.</span></p>
+  </div>
+  <div class="kpi" style="background:#2b2522">
+    <div class="lab">💡 The Keepprz difference</div>
+    <p style="color:#cdbfac;font-size:.95rem;margin:.5em 0 0">On a big platform, ${money(gross)} in bookings would cost you about <b style="color:#e08a6a">${money(gross*0.17)}</b> in host + guest fees and you'd never get the guest's email. Here you paid <b style="color:#9fcf8a">${money(keepprzFee)}</b> flat — and every guest is <b style="color:#fff">yours</b> to bring back.</p>
+  </div>`;
+</script>
+</body>
+</html>
