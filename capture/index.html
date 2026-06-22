@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0E0E10" />
+<title>Capture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* ---- tokens ---- */
+  :root{
+    --bg:#0E0E10; --panel:#17171B; --panel2:#202027; --line:#2C2C34;
+    --text:#ECEAE4; --muted:#8B8880; --muted2:#5E5C56;
+    --amber:#FFB23E; --amber-deep:#E8741E; --rec:#FF4D3D; --ok:#5BCB8B;
+    --r:16px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; background:var(--bg); color:var(--text);
+    font-family:"Space Grotesk",system-ui,sans-serif;}
+  body{padding:20px 16px calc(40px + env(safe-area-inset-bottom)); max-width:560px; margin:0 auto;}
+  .mono{font-family:"IBM Plex Mono",monospace;}
+  /* ---- header ---- */
+  header{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px;}
+  .brandmark{font-weight:700; font-size:22px; letter-spacing:-0.5px;}
+  .brandmark .dot{color:var(--amber);}
+  .gps{font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; gap:6px;}
+  .gps .pip{width:7px; height:7px; border-radius:50%; background:var(--muted2);}
+  .gps.lock .pip{background:var(--ok); box-shadow:0 0 8px var(--ok);}
+  .gps.lock{color:var(--text);}
+  /* ---- capture well (signature) ---- */
+  .well{position:relative; border:1.5px dashed var(--line); border-radius:24px;
+    background:radial-gradient(120% 120% at 50% 0%, #1d1d22 0%, var(--panel) 70%);
+    padding:38px 20px 30px; text-align:center; cursor:pointer; overflow:hidden;
+    transition:border-color .2s, transform .08s;}
+  .well:active{transform:scale(.992);}
+  .well.hot{border-color:var(--amber);}
+  .recdot{width:46px; height:46px; border-radius:50%; margin:0 auto 16px;
+    background:var(--rec); box-shadow:0 0 0 0 rgba(255,77,61,.5);
+    animation:pulse 2.4s infinite; display:flex; align-items:center; justify-content:center;}
+  .recdot svg{width:22px; height:22px; fill:#fff;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,77,61,.45);}70%{box-shadow:0 0 0 18px rgba(255,77,61,0);}100%{box-shadow:0 0 0 0 rgba(255,77,61,0);}}
+  .well h1{margin:0; font-size:19px; font-weight:600; letter-spacing:-0.2px;}
+  .well p{margin:6px 0 0; font-size:13px; color:var(--muted);}
+  /* ---- section labels ---- */
+  .eyebrow{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted2);
+    margin:26px 4px 11px; display:flex; align-items:center; gap:8px;}
+  .eyebrow::after{content:""; flex:1; height:1px; background:var(--line);}
+  /* ---- chips ---- */
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{border:1px solid var(--line); background:var(--panel); color:var(--muted);
+    padding:9px 14px; border-radius:999px; font-size:13.5px; font-weight:500; cursor:pointer;
+    transition:all .14s;}
+  .chip:active{transform:scale(.95);}
+  .chip.on{background:var(--text); color:#111; border-color:var(--text);}
+  .chip.tag.on{background:rgba(255,178,62,.16); color:var(--amber); border-color:var(--amber);}
+  textarea{width:100%; background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    color:var(--text); font-family:inherit; font-size:15px; padding:12px 14px; resize:none; margin-top:4px;}
+  textarea::placeholder{color:var(--muted2);}
+  textarea:focus{outline:none; border-color:var(--amber);}
+  /* ---- queue ---- */
+  .queue{display:flex; flex-direction:column; gap:8px;}
+  .item{display:flex; align-items:center; gap:12px; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:10px 12px;}
+  .thumb{width:42px; height:42px; border-radius:8px; object-fit:cover; background:var(--panel2); flex:none;}
+  .thumb.vid{display:flex; align-items:center; justify-content:center; color:var(--muted);}
+  .meta{flex:1; min-width:0;}
+  .meta .nm{font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .meta .sub{font-size:11px; color:var(--muted);}
+  .bar{height:3px; background:var(--panel2); border-radius:2px; margin-top:6px; overflow:hidden;}
+  .bar i{display:block; height:100%; width:0; background:var(--amber); transition:width .25s;}
+  .state{font-size:11px; flex:none; letter-spacing:.5px; text-transform:uppercase;}
+  .state.done{color:var(--ok);} .state.err{color:var(--rec);} .state.go{color:var(--amber);}
+  /* ---- recent strip ---- */
+  .recent{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
+  .recent a{aspect-ratio:1; border-radius:10px; overflow:hidden; background:var(--panel); border:1px solid var(--line); position:relative; display:block;}
+  .recent img{width:100%; height:100%; object-fit:cover;}
+  .recent .vtag{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--muted);}
+  .recent .b{position:absolute; left:4px; bottom:4px; font-size:9px; background:rgba(0,0,0,.6); padding:2px 5px; border-radius:5px; letter-spacing:.5px;}
+  .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(80px);
+    background:var(--text); color:#111; font-weight:600; font-size:14px; padding:12px 20px; border-radius:999px;
+    transition:transform .3s; box-shadow:0 8px 30px rgba(0,0,0,.5); z-index:9;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .hint{font-size:11px; color:var(--muted2); margin:8px 4px 0; line-height:1.5;}
+  input[type=file]{display:none;}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brandmark">capture<span class="dot">.</span></div>
+    <div class="gps" id="gps"><span class="pip"></span><span id="gpsTxt">locating…</span></div>
+  </header>
+  <div class="well" id="well">
+    <div class="recdot"><svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
+    <h1>Shoot or choose media</h1>
+    <p>Photos &amp; video · multiple at once</p>
+    <input type="file" id="file" accept="image/*,video/*" multiple />
+  </div>
+  <div class="eyebrow">Brand</div>
+  <div class="chips" id="brands"></div>
+  <div class="eyebrow">Tags</div>
+  <div class="chips" id="tags"></div>
+  <div class="eyebrow">Caption · optional</div>
+  <textarea id="caption" rows="2" placeholder="A note for this batch (passed through to the post pipeline)…"></textarea>
+  <div id="queueWrap" style="display:none">
+    <div class="eyebrow">This upload</div>
+    <div class="queue" id="queue"></div>
+  </div>
+  <div class="eyebrow">Recent</div>
+  <div class="recent" id="recent"></div>
+  <p class="hint" id="hint">Files land in the <span class="mono">content-captures</span> bucket and a row in <span class="mono">content_captures</span> (status <span class="mono">new</span>) — ready for the Postiz pipeline to pick up.</p>
+  <div class="toast" id="toast"></div>
+<script>
+/* ============ CONFIG — per-client setup lives here ============ */
+/* To wire a new client: change these 4 lines (their Supabase URL + */
+/* publishable key, their bucket name, their brand + tag lists).     */
+const SUPABASE_URL = "https://ijctbrncqzdhrizhwpor.supabase.co";
+const SUPABASE_KEY = "sb_publishable_U0xEmLq4ajPPTtbYZ1_hJQ_G17RZL4k";
+const BUCKET = "content-captures";
+const BRANDS = ["Bora Vista","Kapila Gardens","Yagaure","Dharmmele","Radiance","Leue Studios"];
+const TAGS   = ["action","dark night photography","behind the scenes","performance","venue","b-roll","portrait","timelapse"];
+/* ============================================================= */
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let brand = BRANDS[0];
+const activeTags = new Set();
+let coords = null;
+/* ---- build chips ---- */
+const brandsEl = document.getElementById("brands");
+BRANDS.forEach((b,i)=>{
+  const el = document.createElement("div");
+  el.className = "chip" + (i===0?" on":"");
+  el.textContent = b;
+  el.onclick = ()=>{ brand=b; [...brandsEl.children].forEach(c=>c.classList.remove("on")); el.classList.add("on"); };
+  brandsEl.appendChild(el);
+});
+const tagsEl = document.getElementById("tags");
+TAGS.forEach(t=>{
+  const el = document.createElement("div");
+  el.className = "chip tag";
+  el.textContent = t;
+  el.onclick = ()=>{ el.classList.toggle("on"); el.classList.contains("on")?activeTags.add(t):activeTags.delete(t); };
+  tagsEl.appendChild(el);
+});
+/* ---- geolocation ---- */
+const gpsEl = document.getElementById("gps"), gpsTxt = document.getElementById("gpsTxt");
+function lockGPS(){
+  if(!navigator.geolocation){ gpsTxt.textContent="no gps"; return; }
+  navigator.geolocation.getCurrentPosition(
+    p=>{ coords={lat:p.coords.latitude,lng:p.coords.longitude};
+      gpsEl.classList.add("lock");
+      gpsTxt.textContent = coords.lat.toFixed(4)+", "+coords.lng.toFixed(4);
+      gpsTxt.className="mono"; },
+    ()=>{ gpsTxt.textContent="location off"; },
+    {enableHighAccuracy:true, timeout:8000, maximumAge:60000}
+  );
+}
+lockGPS();
+/* ---- capture well ---- */
+const fileInput = document.getElementById("file"), well = document.getElementById("well");
+well.onclick = ()=> fileInput.click();
+fileInput.onchange = ()=>{ if(fileInput.files.length){ lockGPS(); handle([...fileInput.files]); fileInput.value=""; } };
+/* ---- helpers ---- */
+const fmtSize = b => b>1048576 ? (b/1048576).toFixed(1)+" MB" : Math.round(b/1024)+" KB";
+const stamp = () => { const d=new Date(); const p=n=>String(n).padStart(2,"0");
+  return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-"+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds()); };
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2600); }
+/* ---- upload pipeline ---- */
+const queue = document.getElementById("queue"), queueWrap = document.getElementById("queueWrap");
+async function handle(files){
+  queueWrap.style.display="block"; queue.innerHTML="";
+  const caption = document.getElementById("caption").value.trim() || null;
+  const tags = [...activeTags];
+  let okCount = 0;
+  for(const f of files){
+    const isVid = f.type.startsWith("video");
+    const row = document.createElement("div"); row.className="item";
+    const thumb = isVid
+      ? `<div class="thumb vid">▶</div>`
+      : `<img class="thumb" src="${URL.createObjectURL(f)}" />`;
+    row.innerHTML = `${thumb}<div class="meta"><div class="nm">${f.name}</div>
+      <div class="sub">${isVid?"video":"photo"} · ${fmtSize(f.size)}</div>
+      <div class="bar"><i></i></div></div><div class="state go">…</div>`;
+    queue.appendChild(row);
+    const bar = row.querySelector(".bar i"), state = row.querySelector(".state");
+    bar.style.width="35%";
+    try{
+      const ext = (f.name.split(".").pop()||"bin").toLowerCase();
+      const path = `${slug(brand)}/${stamp()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
+      const { error:upErr } = await sb.storage.from(BUCKET).upload(path, f, {contentType:f.type, upsert:false});
+      if(upErr) throw upErr;
+      bar.style.width="75%";
+      const { data:{ publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(path);
+      const { error:dbErr } = await sb.from("content_captures").insert({
+        storage_path:path, public_url:publicUrl,
+        media_type:isVid?"video":"image", mime_type:f.type,
+        file_name:f.name, size_bytes:f.size,
+        brand, tags, caption,
+        latitude:coords?.lat ?? null, longitude:coords?.lng ?? null,
+        captured_at:new Date(f.lastModified).toISOString(),
+        status:"new"
+      });
+      if(dbErr) throw dbErr;
+      bar.style.width="100%"; state.textContent="saved"; state.className="state done"; okCount++;
+    }catch(err){
+      bar.style.width="100%"; bar.style.background="var(--rec)";
+      state.textContent="failed"; state.className="state err";
+      row.querySelector(".sub").textContent = (err.message||"upload error").slice(0,60);
+    }
+  }
+  if(okCount) toast(okCount+(okCount>1?" files saved":" file saved"));
+  loadRecent();
+}
+/* ---- recent strip ---- */
+const recentEl = document.getElementById("recent");
+async function loadRecent(){
+  const { data, error } = await sb.from("content_captures")
+    .select("public_url,media_type,brand").order("created_at",{ascending:false}).limit(8);
+  if(error||!data) return;
+  recentEl.innerHTML = data.map(r=>`<a href="${r.public_url}" target="_blank">
+    ${r.media_type==="video" ? `<div class="vtag">▶</div>` : `<img src="${r.public_url}" loading="lazy"/>`}
+    <span class="b">${(r.brand||"").split(" ")[0]}</span></a>`).join("");
+}
+loadRecent();
+</script>
+</body>
+</html>
