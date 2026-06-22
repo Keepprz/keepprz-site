@@ -110,9 +110,9 @@
   </div>
   <div class="eyebrow">Recent</div>
   <div class="recent" id="recent"></div>
-  <p class="hint" id="hint">Files land in the <span class="mono">content-captures</span> bucket and a row in <span class="mono">content_captures</span> (status <span class="mono">new</span>) — ready for the Postiz pipeline to pick up. Video is converted to <span class="mono">.mp4</span> in-browser so it's post-ready.</p>
+  <p class="hint" id="hint">Files land in the <span class="mono">content-captures</span> bucket and a row in <span class="mono">content_captures</span> (status <span class="mono">new</span>) — ready for the Postiz pipeline to pick up.</p>
   <div class="toast" id="toast"></div>
-<script type="module">
+<script>
 /* ============ CONFIG — per-client setup lives here ============ */
 /* To wire a new client: change these 4 lines (their Supabase URL + */
 /* publishable key, their bucket name, their brand + tag lists).     */
@@ -122,17 +122,10 @@ const BUCKET = "content-captures";
 const BRANDS = ["Borah Vista","RayDynce","Yagaure","Kapila Gardens","Dharmmele","Radiance","Leue Studios"];
 const TAGS   = ["action","dark night photography","behind the scenes","performance","venue","b-roll","portrait","timelapse","Talking Head"];
 /* ============================================================= */
-
-/* Videos larger than this skip in-browser transcode and upload as-is
-   (the downstream pipeline transcodes any stragglers). Keeps phones
-   from choking on long 4K clips. */
-const MAX_TRANSCODE_BYTES = 80 * 1024 * 1024; // 80 MB
-
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let brand = BRANDS[0];
 const activeTags = new Set();
 let coords = null;
-
 /* ---- build chips ---- */
 const brandsEl = document.getElementById("brands");
 BRANDS.forEach((b,i)=>{
@@ -150,7 +143,6 @@ TAGS.forEach(t=>{
   el.onclick = ()=>{ el.classList.toggle("on"); el.classList.contains("on")?activeTags.add(t):activeTags.delete(t); };
   tagsEl.appendChild(el);
 });
-
 /* ---- geolocation ---- */
 const gpsEl = document.getElementById("gps"), gpsTxt = document.getElementById("gpsTxt");
 function lockGPS(){
@@ -165,72 +157,19 @@ function lockGPS(){
   );
 }
 lockGPS();
-
 /* ---- capture well ---- */
 const fileInput = document.getElementById("file"), well = document.getElementById("well");
 well.onclick = ()=> fileInput.click();
 fileInput.onchange = ()=>{ if(fileInput.files.length){ lockGPS(); handle([...fileInput.files]); fileInput.value=""; } };
-
 /* ---- helpers ---- */
 const fmtSize = b => b>1048576 ? (b/1048576).toFixed(1)+" MB" : Math.round(b/1024)+" KB";
 const stamp = () => { const d=new Date(); const p=n=>String(n).padStart(2,"0");
   return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-"+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds()); };
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2600); }
-
-/* ---- ffmpeg (lazy, single-thread, loaded only when a video is picked) ---- */
-const FF_CORE = "https://esm.sh/@ffmpeg/core@0.12.6/dist/esm";
-let _ff = null, _ffLoad = null, _fetchFile = null;
-function ensureFfmpeg(){
-  if(_ffLoad) return _ffLoad;
-  _ffLoad = (async ()=>{
-    // Lazy CDN import: if this ever fails, only video transcode is lost
-    // (caller falls back to the original file) — the rest of the app is fine.
-    const [{ FFmpeg }, { toBlobURL, fetchFile }] = await Promise.all([
-      import("https://esm.sh/@ffmpeg/ffmpeg@0.12.10"),
-      import("https://esm.sh/@ffmpeg/util@0.12.1"),
-    ]);
-    _fetchFile = fetchFile;
-    const ff = new FFmpeg();
-    await ff.load({
-      coreURL: await toBlobURL(`${FF_CORE}/ffmpeg-core.js`, "text/javascript"),
-      wasmURL: await toBlobURL(`${FF_CORE}/ffmpeg-core.wasm`, "application/wasm"),
-    });
-    _ff = ff;
-    return ff;
-  })();
-  return _ffLoad;
-}
-const isMp4 = f => /\.mp4$/i.test(f.name||"") || f.type==="video/mp4";
-/* Convert any video file to a web/IG/TikTok-friendly H.264+AAC mp4.
-   Returns {blob,name,type} on success; throws on failure (caller falls back). */
-async function transcodeToMp4(file, onProgress){
-  const ff = await ensureFfmpeg();
-  const inName = "in_" + (file.name||"clip").replace(/[^a-zA-Z0-9._-]/g,"_");
-  const outName = "out.mp4";
-  const prog = ({progress})=>{ if(onProgress && progress>=0 && progress<=1) onProgress(progress); };
-  ff.on("progress", prog);
-  try{
-    await ff.writeFile(inName, await _fetchFile(file));
-    await ff.exec([
-      "-i", inName,
-      "-c:v","libx264","-preset","veryfast","-crf","23","-pix_fmt","yuv420p",
-      "-c:a","aac","-b:a","160k","-movflags","+faststart",
-      outName
-    ]);
-    const data = await ff.readFile(outName);
-    const blob = new Blob([data.buffer], {type:"video/mp4"});
-    if(!blob.size) throw new Error("empty output");
-    const base = (file.name||"clip").replace(/\.[^.]+$/,"") || "clip";
-    return { blob, name: base + ".mp4", type:"video/mp4" };
-  } finally {
-    ff.off("progress", prog);
-    try{ ff.deleteFile && ff.deleteFile(inName); }catch(_){}
-    try{ ff.deleteFile && ff.deleteFile(outName); }catch(_){}
-  }
-}
-
-/* ---- upload pipeline ---- */
+/* ---- upload pipeline ----
+   Uploads the original file as-is (fast + reliable on mobile). Video is
+   normalized to .mp4 downstream by the posting pipeline, not in-browser. */
 const queue = document.getElementById("queue"), queueWrap = document.getElementById("queueWrap");
 async function handle(files){
   queueWrap.style.display="block"; queue.innerHTML="";
@@ -247,36 +186,19 @@ async function handle(files){
       <div class="sub">${isVid?"video":"photo"} · ${fmtSize(f.size)}</div>
       <div class="bar"><i></i></div></div><div class="state go">…</div>`;
     queue.appendChild(row);
-    const bar = row.querySelector(".bar i"), state = row.querySelector(".state"), sub = row.querySelector(".sub");
-
-    // What we'll actually upload — defaults to the original file.
-    let upBlob = f, upName = f.name, upType = f.type || "application/octet-stream";
-
+    const bar = row.querySelector(".bar i"), state = row.querySelector(".state");
+    bar.style.width="35%";
     try{
-      // Convert video → mp4 in-browser (so captures land post-ready).
-      // Any failure / oversize falls back to uploading the original untouched.
-      if(isVid && !isMp4(f) && f.size <= MAX_TRANSCODE_BYTES){
-        state.textContent="converting"; bar.style.width="8%";
-        try{
-          const out = await transcodeToMp4(f, p=>{ bar.style.width = Math.round(8 + p*52) + "%"; });
-          upBlob = out.blob; upName = out.name; upType = out.type;
-          sub.textContent = "video · " + fmtSize(out.blob.size) + " · mp4";
-        }catch(convErr){
-          sub.textContent = "video · uploaded original (.mov)";
-        }
-      }
-
-      state.textContent="…"; if(parseFloat(bar.style.width)<60) bar.style.width="60%";
-      const ext = (upName.split(".").pop()||"bin").toLowerCase();
+      const ext = (f.name.split(".").pop()||"bin").toLowerCase();
       const path = `${slug(brand)}/${stamp()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-      const { error:upErr } = await sb.storage.from(BUCKET).upload(path, upBlob, {contentType:upType, upsert:false});
+      const { error:upErr } = await sb.storage.from(BUCKET).upload(path, f, {contentType:f.type, upsert:false});
       if(upErr) throw upErr;
-      bar.style.width="82%";
+      bar.style.width="75%";
       const { data:{ publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(path);
       const { error:dbErr } = await sb.from("content_captures").insert({
         storage_path:path, public_url:publicUrl,
-        media_type:isVid?"video":"image", mime_type:upType,
-        file_name:upName, size_bytes:upBlob.size,
+        media_type:isVid?"video":"image", mime_type:f.type,
+        file_name:f.name, size_bytes:f.size,
         brand, tags, caption,
         latitude:coords?.lat ?? null, longitude:coords?.lng ?? null,
         captured_at:new Date(f.lastModified).toISOString(),
@@ -287,13 +209,12 @@ async function handle(files){
     }catch(err){
       bar.style.width="100%"; bar.style.background="var(--rec)";
       state.textContent="failed"; state.className="state err";
-      sub.textContent = (err.message||"upload error").slice(0,60);
+      row.querySelector(".sub").textContent = (err.message||"upload error").slice(0,60);
     }
   }
   if(okCount) toast(okCount+(okCount>1?" files saved":" file saved"));
   loadRecent();
 }
-
 /* ---- recent strip ---- */
 const recentEl = document.getElementById("recent");
 async function loadRecent(){
