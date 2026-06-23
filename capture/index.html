@@ -51,6 +51,9 @@
   .eyebrow::after{content:""; flex:1; height:1px; background:var(--line);}
   /* ---- chips ---- */
   .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chips.needpick{animation:flashpick .35s ease 2;}
+  @keyframes flashpick{50%{opacity:.3;}}
+  .eyebrow.req{color:var(--amber);}
   .chip{border:1px solid var(--line); background:var(--panel); color:var(--muted);
     padding:9px 14px; border-radius:999px; font-size:13.5px; font-weight:500; cursor:pointer;
     transition:all .14s;}
@@ -129,16 +132,17 @@ const TAGS   = ["action","dark night photography","behind the scenes","performan
 const RESUMABLE_THRESHOLD = 45 * 1024 * 1024; // 45 MB
 /* ============================================================= */
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let brand = BRANDS[0];
+let brand = null; // no default — force a deliberate brand pick so media is never mis-categorized
 const activeTags = new Set();
 let coords = null;
 /* ---- build chips ---- */
 const brandsEl = document.getElementById("brands");
-BRANDS.forEach((b,i)=>{
+const brandEyebrow = brandsEl.previousElementSibling; // the "Brand" eyebrow label
+BRANDS.forEach((b)=>{
   const el = document.createElement("div");
-  el.className = "chip" + (i===0?" on":"");
+  el.className = "chip";
   el.textContent = b;
-  el.onclick = ()=>{ brand=b; [...brandsEl.children].forEach(c=>c.classList.remove("on")); el.classList.add("on"); };
+  el.onclick = ()=>{ brand=b; [...brandsEl.children].forEach(c=>c.classList.remove("on")); el.classList.add("on"); brandEyebrow.classList.remove("req"); };
   brandsEl.appendChild(el);
 });
 const tagsEl = document.getElementById("tags");
@@ -165,8 +169,16 @@ function lockGPS(){
 lockGPS();
 /* ---- capture well ---- */
 const fileInput = document.getElementById("file"), well = document.getElementById("well");
-well.onclick = ()=> fileInput.click();
-fileInput.onchange = ()=>{ if(fileInput.files.length){ lockGPS(); handle([...fileInput.files]); fileInput.value=""; } };
+function requireBrand(){
+  if(brand) return true;
+  toast("Pick a brand first 👆");
+  brandEyebrow.classList.add("req");
+  brandsEl.classList.add("needpick"); setTimeout(()=>brandsEl.classList.remove("needpick"),800);
+  brandsEl.scrollIntoView({behavior:"smooth", block:"center"});
+  return false;
+}
+well.onclick = ()=>{ if(requireBrand()) fileInput.click(); };
+fileInput.onchange = ()=>{ if(fileInput.files.length){ if(!requireBrand()){ fileInput.value=""; return; } lockGPS(); handle([...fileInput.files]); fileInput.value=""; } };
 /* ---- helpers ---- */
 const fmtSize = b => b>1048576 ? (b/1048576).toFixed(1)+" MB" : Math.round(b/1024)+" KB";
 const stamp = () => { const d=new Date(); const p=n=>String(n).padStart(2,"0");
