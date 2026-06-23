@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
 <style>
   /* ---- tokens ---- */
   :root{
@@ -110,17 +111,22 @@
   </div>
   <div class="eyebrow">Recent</div>
   <div class="recent" id="recent"></div>
-  <p class="hint" id="hint">Files land in the <span class="mono">content-captures</span> bucket and a row in <span class="mono">content_captures</span> (status <span class="mono">new</span>) — ready for the Postiz pipeline to pick up.</p>
+  <p class="hint" id="hint">Files land in the <span class="mono">content-captures</span> bucket and a row in <span class="mono">content_captures</span> (status <span class="mono">new</span>) — ready for the Postiz pipeline to pick up. Large videos upload in chunks (resumable).</p>
   <div class="toast" id="toast"></div>
 <script>
 /* ============ CONFIG — per-client setup lives here ============ */
-/* To wire a new client: change these 4 lines (their Supabase URL + */
-/* publishable key, their bucket name, their brand + tag lists).     */
+/* To wire a new client: change these lines (their Supabase URL +     */
+/* keys, their bucket name, their brand + tag lists).                 */
 const SUPABASE_URL = "https://ijctbrncqzdhrizhwpor.supabase.co";
-const SUPABASE_KEY = "sb_publishable_U0xEmLq4ajPPTtbYZ1_hJQ_G17RZL4k";
+const SUPABASE_KEY = "sb_publishable_U0xEmLq4ajPPTtbYZ1_hJQ_G17RZL4k"; // publishable/anon key (supabase-js)
+/* anon JWT — used only as the bearer for resumable (TUS) uploads.    */
+const SUPABASE_ANON_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqY3Ricm5jcXpkaHJpemh3cG9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDExOTEsImV4cCI6MjA5MTc3NzE5MX0.ynD_eStbS-v6jxTMLcg8ggZaFKgz_KwMygctB-R4R3E";
 const BUCKET = "content-captures";
 const BRANDS = ["Borah Vista","RayDynce","Yagaure","Kapila Gardens","Dharmmele","Radiance","Leue Studios"];
 const TAGS   = ["action","dark night photography","behind the scenes","performance","venue","b-roll","portrait","timelapse","Talking Head"];
+/* Files larger than this use chunked resumable uploads (standard
+   single-request uploads are capped ~50MB by the storage gateway). */
+const RESUMABLE_THRESHOLD = 45 * 1024 * 1024; // 45 MB
 /* ============================================================= */
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let brand = BRANDS[0];
@@ -167,9 +173,36 @@ const stamp = () => { const d=new Date(); const p=n=>String(n).padStart(2,"0");
   return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-"+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds()); };
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2600); }
+
+/* ---- storage upload: standard for small files, resumable (TUS) for large ---- */
+function putStandard(path, file){
+  return sb.storage.from(BUCKET).upload(path, file, {contentType:file.type||"application/octet-stream", upsert:false})
+    .then(({error})=>{ if(error) throw error; });
+}
+function putResumable(path, file, onProgress){
+  return new Promise((resolve,reject)=>{
+    const up = new tus.Upload(file, {
+      endpoint: `${SUPABASE_URL}/storage/v1/upload/resumable`,
+      retryDelays: [0, 2000, 5000, 10000, 20000],
+      headers: { authorization: `Bearer ${SUPABASE_ANON_JWT}`, apikey: SUPABASE_ANON_JWT, "x-upsert":"false" },
+      uploadDataDuringCreation: true,
+      removeFingerprintOnSuccess: true,
+      chunkSize: 6 * 1024 * 1024, // Supabase requires 6MB chunks
+      metadata: {
+        bucketName: BUCKET, objectName: path,
+        contentType: file.type || "application/octet-stream", cacheControl: "3600",
+      },
+      onError: reject,
+      onProgress: (sent,total)=>{ if(onProgress && total) onProgress(sent/total); },
+      onSuccess: resolve,
+    });
+    up.findPreviousUploads().then(prev=>{ if(prev.length) up.resumeFromPreviousUpload(prev[0]); up.start(); })
+      .catch(()=>up.start());
+  });
+}
 /* ---- upload pipeline ----
-   Uploads the original file as-is (fast + reliable on mobile). Video is
-   normalized to .mp4 downstream by the posting pipeline, not in-browser. */
+   Uploads the original file as-is (fast + reliable). Video is normalized
+   to .mp4 downstream by the posting pipeline, not in-browser. */
 const queue = document.getElementById("queue"), queueWrap = document.getElementById("queueWrap");
 async function handle(files){
   queueWrap.style.display="block"; queue.innerHTML="";
@@ -178,22 +211,28 @@ async function handle(files){
   let okCount = 0;
   for(const f of files){
     const isVid = f.type.startsWith("video");
+    const big = f.size > RESUMABLE_THRESHOLD;
     const row = document.createElement("div"); row.className="item";
     const thumb = isVid
       ? `<div class="thumb vid">▶</div>`
       : `<img class="thumb" src="${URL.createObjectURL(f)}" />`;
     row.innerHTML = `${thumb}<div class="meta"><div class="nm">${f.name}</div>
-      <div class="sub">${isVid?"video":"photo"} · ${fmtSize(f.size)}</div>
+      <div class="sub">${isVid?"video":"photo"} · ${fmtSize(f.size)}${big?" · chunked":""}</div>
       <div class="bar"><i></i></div></div><div class="state go">…</div>`;
     queue.appendChild(row);
     const bar = row.querySelector(".bar i"), state = row.querySelector(".state");
-    bar.style.width="35%";
+    bar.style.width = big ? "4%" : "35%";
     try{
       const ext = (f.name.split(".").pop()||"bin").toLowerCase();
       const path = `${slug(brand)}/${stamp()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-      const { error:upErr } = await sb.storage.from(BUCKET).upload(path, f, {contentType:f.type, upsert:false});
-      if(upErr) throw upErr;
-      bar.style.width="75%";
+      if(big){
+        state.textContent="uploading";
+        await putResumable(path, f, p=>{ bar.style.width = Math.round(4 + p*86) + "%"; });
+      } else {
+        await putStandard(path, f);
+        bar.style.width="75%";
+      }
+      bar.style.width="92%";
       const { data:{ publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(path);
       const { error:dbErr } = await sb.from("content_captures").insert({
         storage_path:path, public_url:publicUrl,
