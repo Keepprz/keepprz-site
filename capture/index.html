@@ -100,14 +100,15 @@
     <div class="recdot"><svg viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
     <h1>Shoot or choose media</h1>
     <p>Photos &amp; video · multiple at once</p>
+    <p style="color:var(--amber); font-weight:500;">Keep videos under 50&nbsp;MB</p>
     <input type="file" id="file" accept="image/*,video/*" multiple />
   </div>
   <div class="eyebrow">Brand</div>
   <div class="chips" id="brands"></div>
   <div class="eyebrow">Tags</div>
   <div class="chips" id="tags"></div>
-  <div class="eyebrow">Caption · optional</div>
-  <textarea id="caption" rows="2" placeholder="A note for this batch (passed through to the post pipeline)…"></textarea>
+  <div class="eyebrow">Caption · the social post text</div>
+  <textarea id="caption" rows="3" placeholder="Write the post caption exactly as it should appear (hashtags, emojis and all). Put any scheduling or instructions on a new line after  &gt;&gt;  — everything after &gt;&gt; stays private and never posts."></textarea>
   <div id="queueWrap" style="display:none">
     <div class="eyebrow">This upload</div>
     <div class="queue" id="queue"></div>
@@ -125,8 +126,10 @@ const SUPABASE_KEY = "sb_publishable_U0xEmLq4ajPPTtbYZ1_hJQ_G17RZL4k"; // publis
 /* anon JWT — used only as the bearer for resumable (TUS) uploads.    */
 const SUPABASE_ANON_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqY3Ricm5jcXpkaHJpemh3cG9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMDExOTEsImV4cCI6MjA5MTc3NzE5MX0.ynD_eStbS-v6jxTMLcg8ggZaFKgz_KwMygctB-R4R3E";
 const BUCKET = "content-captures";
-const BRANDS = ["Borah Vista","RayDynce","Yagaure","Kapila Gardens","Dharmmele","Radiance","Leue Studios"];
-const TAGS   = ["action","dark night photography","behind the scenes","performance","venue","b-roll","portrait","timelapse","Talking Head"];
+const BRANDS = ["Borah Vista","RayDynce","Yagaure","Kapila Gardens","Dharmmele","Leue Studios"];
+/* Tags are quick-tap THEMES to categorize/organize the library. Add freely as new
+   content types emerge — Mercedes can infer scheduling tier (premium vs filler) from theme. */
+const TAGS   = ["History","Activities","Dark Skies","Song Reel","Talking Head","Comedy","Live Performance","Creative Drinks","Upcoming Events","Behind the Scenes","B-Roll","Venue","Portrait","Timelapse","Announcement"];
 /* Files larger than this use chunked resumable uploads (standard
    single-request uploads are capped ~50MB by the storage gateway). */
 const RESUMABLE_THRESHOLD = 45 * 1024 * 1024; // 45 MB
