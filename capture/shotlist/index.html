@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>shotlist.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #0d0d0f; --panel: #17171b; --panel2: #1f1f25; --line: #2a2a32;
+    --text: #ece9e2; --dim: #8a8794; --amber: #f5a524; --red: #e5484d;
+    --green: #46a758; --blue: #4f9cf9; --purple: #a06bfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; padding-bottom: 80px; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  header { padding: 18px 16px 8px; display: flex; align-items: baseline; justify-content: space-between; }
+  header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  header h1 span { color: var(--amber); }
+  #epTag { font-size: 11px; color: var(--dim); font-family: 'IBM Plex Mono', monospace; }
+  .locs { display: flex; gap: 8px; overflow-x: auto; padding: 10px 16px 14px; scrollbar-width: none; }
+  .locs::-webkit-scrollbar { display: none; }
+  .loc-chip { flex: 0 0 auto; background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+    padding: 8px 14px; font-size: 13px; color: var(--dim); cursor: pointer; white-space: nowrap; }
+  .loc-chip.active { background: var(--amber); border-color: var(--amber); color: #16130a; font-weight: 500; }
+  .loc-chip .cnt { font-family: 'IBM Plex Mono', monospace; font-size: 11px; opacity: 0.75; margin-left: 4px; }
+  .progress-wrap { padding: 0 16px 12px; }
+  .progress-bar { height: 4px; background: var(--panel2); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--amber); border-radius: 2px; transition: width 0.4s; }
+  .progress-label { font-size: 11px; color: var(--dim); margin-top: 6px; font-family: 'IBM Plex Mono', monospace; }
+  .beat-group { margin: 0 12px 14px; }
+  .beat-head { font-size: 11px; color: var(--dim); font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase; letter-spacing: 1px; padding: 6px 6px 6px; }
+  .shot { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+  .shot.done { opacity: 0.55; }
+  .shot-row { display: flex; align-items: center; gap: 12px; padding: 12px; cursor: pointer; }
+  .checkbox { flex: 0 0 26px; height: 26px; border: 2px solid var(--line); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 15px; color: #16130a; }
+  .shot.done .checkbox { background: var(--amber); border-color: var(--amber); }
+  .shot-desc { flex: 1; font-size: 14px; line-height: 1.35; }
+  .badges { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+  .badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .cam-phone { background: rgba(70,167,88,0.16); color: var(--green); }
+  .cam-bmpcc { background: rgba(245,165,36,0.16); color: var(--amber); }
+  .cam-drone { background: rgba(79,156,249,0.16); color: var(--blue); }
+  .cam-screen { background: rgba(160,107,250,0.16); color: var(--purple); }
+  .badge.nice { background: rgba(138,135,148,0.16); color: var(--dim); }
+  .badge.filenum { background: var(--panel2); color: var(--text); text-transform: none; }
+  .shot-detail { display: none; border-top: 1px solid var(--line); padding: 12px; background: var(--panel2); }
+  .shot.open .shot-detail { display: block; }
+  .shot-detail label { display: block; font-size: 11px; color: var(--dim); margin: 10px 0 4px; text-transform: uppercase; letter-spacing: 1px; font-family: 'IBM Plex Mono', monospace; }
+  .shot-detail input[type=text], .shot-detail textarea { width: 100%; background: var(--bg); border: 1px solid var(--line);
+    border-radius: 8px; color: var(--text); padding: 10px; font-size: 16px; font-family: 'IBM Plex Mono', monospace; }
+  .shot-detail textarea { font-family: 'Space Grotesk', sans-serif; resize: none; height: 60px; }
+  .detail-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .btn { flex: 1; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 500; font-family: 'Space Grotesk', sans-serif; cursor: pointer; }
+  .btn-save { background: var(--amber); color: #16130a; }
+  .btn-thumb { background: var(--panel); color: var(--text); border: 1px solid var(--line); flex: 0 0 auto; padding: 12px 14px; }
+  .btn-take { background: var(--panel); color: var(--dim); border: 1px solid var(--line); flex: 0 0 auto; padding: 12px 14px; }
+  .thumb-preview { margin-top: 10px; max-width: 120px; border-radius: 8px; display: block; }
+  .vo-note { font-size: 12px; color: var(--dim); font-style: italic; padding: 2px 6px 8px; line-height: 1.4; }
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--green);
+    color: #0b130d; padding: 12px 22px; border-radius: 10px; font-size: 14px; font-weight: 500; transition: transform 0.3s; z-index: 50; }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.err { background: var(--red); color: #fff; }
+  .empty { text-align: center; color: var(--dim); padding: 40px 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>shotlist<span>.</span></h1>
+  <div id="epTag">loading…</div>
+</header>
+<div class="locs" id="locChips"></div>
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+  <div class="progress-label" id="progLabel"></div>
+</div>
+<div id="shotList"><div class="empty">Loading shots…</div></div>
+<div id="toast"></div>
+<input type="file" id="thumbInput" accept="image/*" style="display:none">
+
+<script>
+const SUPABASE_URL = "https://ijctbrncqzdhrizhwpor.supabase.co";
+const SUPABASE_KEY = "sb_publishable_U0xEmLq4ajPPTtbYZ1_hJQ_G17RZL4k";
+const BUCKET = "content-captures"; // thumbnails land under shotlist/
+const EPISODE = "bv-s01e01";
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let locations = [], shots = [], beats = {}, activeLoc = null, thumbTarget = null;
+
+const $ = id => document.getElementById(id);
+const camLabel = { phone: "iPhone", bmpcc: "6K", drone: "Drone", screen: "Screen" };
+
+function toast(msg, err) {
+  const t = $("toast"); t.textContent = msg; t.className = err ? "err show" : "show";
+  setTimeout(() => t.className = "", 2200);
+}
+
+async function load() {
+  const { data: ep } = await db.from("prod_episodes").select("id, slug, title, ep_number").eq("slug", EPISODE).single();
+  if (!ep) { $("shotList").innerHTML = '<div class="empty">Episode not found.</div>'; return; }
+  $("epTag").textContent = `S01E0${ep.ep_number} · ${ep.title}`;
+  const [{ data: locs }, { data: bts }, { data: shs }] = await Promise.all([
+    db.from("prod_locations").select("*").order("sort"),
+    db.from("prod_beats").select("*").eq("episode_id", ep.id).order("beat_number"),
+    db.from("prod_shots").select("*").eq("episode_id", ep.id).order("sort"),
+  ]);
+  locations = locs || []; shots = shs || [];
+  (bts || []).forEach(b => beats[b.id] = b);
+  if (!activeLoc && locations.length) activeLoc = locations[0].id;
+  render();
+}
+
+const isDone = s => ["shot","logged","ingested"].includes(s.status);
+
+function render() {
+  $("locChips").innerHTML = locations.map(l => {
+    const ls = shots.filter(s => s.location_id === l.id);
+    const done = ls.filter(isDone).length;
+    return `<div class="loc-chip ${l.id===activeLoc?"active":""}" onclick="setLoc('${l.id}')">${l.name}<span class="cnt">${done}/${ls.length}</span></div>`;
+  }).join("");
+
+  const ls = shots.filter(s => s.location_id === activeLoc);
+  const done = ls.filter(isDone).length;
+  $("progFill").style.width = ls.length ? (100*done/ls.length)+"%" : "0%";
+  $("progLabel").textContent = ls.length ? `${done} of ${ls.length} shots in the can` : "";
+
+  if (!ls.length) { $("shotList").innerHTML = '<div class="empty">No shots at this location.</div>'; return; }
+  const byBeat = {};
+  ls.forEach(s => (byBeat[s.beat_id] = byBeat[s.beat_id] || []).push(s));
+  $("shotList").innerHTML = Object.keys(byBeat)
+    .sort((a,b) => beats[a].beat_number - beats[b].beat_number)
+    .map(bid => {
+      const b = beats[bid];
+      return `<div class="beat-group">
+        <div class="beat-head">Beat ${b.beat_number} — ${b.title} · ${b.duration_sec}s</div>
+        <div class="vo-note">“${(b.vo||"").split(".")[0]}.” · ${b.mood||""}</div>
+        ${byBeat[bid].map(shotCard).join("")}
+      </div>`;
+    }).join("");
+}
+
+function shotCard(s) {
+  return `<div class="shot ${isDone(s)?"done":""}" id="shot-${s.id}">
+    <div class="shot-row" onclick="toggleOpen('${s.id}')">
+      <div class="checkbox" onclick="event.stopPropagation();quickCheck('${s.id}')">${isDone(s)?"✓":""}</div>
+      <div class="shot-desc">${s.description}
+        <div class="badges">
+          <span class="badge cam-${s.camera}">${camLabel[s.camera]}</span>
+          ${s.priority==="nice"?'<span class="badge nice">nice-to-have</span>':""}
+          ${s.file_number?`<span class="badge filenum">#${s.file_number}</span>`:""}
+        </div>
+        ${s.notes?`<div class="vo-note" style="padding:6px 0 0">${s.notes}</div>`:""}
+      </div>
+    </div>
+    <div class="shot-detail">
+      <label>File number(s)</label>
+      <input type="text" id="fn-${s.id}" value="${s.file_number||""}" placeholder="e.g. A001_C042 / IMG_1234 / DJI_0012" autocomplete="off">
+      <label>Take notes</label>
+      <textarea id="nt-${s.id}" placeholder="good take? issues? alt versions?"></textarea>
+      ${s.thumbnail_url?`<img class="thumb-preview" src="${s.thumbnail_url}">`:""}
+      <div class="detail-actions">
+        <button class="btn btn-thumb" onclick="pickThumb('${s.id}')">📷</button>
+        <button class="btn btn-take" onclick="logTake('${s.id}')">+ take</button>
+        <button class="btn btn-save" onclick="saveShot('${s.id}')">Save shot</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function setLoc(id) { activeLoc = id; render(); }
+function toggleOpen(id) { $("shot-"+id).classList.toggle("open"); }
+
+async function quickCheck(id) {
+  const s = shots.find(x => x.id === id);
+  const newStatus = isDone(s) ? "planned" : "shot";
+  const { error } = await db.from("prod_shots").update({ status: newStatus, logged_at: new Date().toISOString() }).eq("id", id);
+  if (error) return toast("Save failed", true);
+  s.status = newStatus; render();
+}
+
+async function saveShot(id) {
+  const s = shots.find(x => x.id === id);
+  const fn = $("fn-"+id).value.trim(), notes = $("nt-"+id).value.trim();
+  const patch = { status: fn ? "logged" : "shot", file_number: fn || null, logged_at: new Date().toISOString() };
+  const { error } = await db.from("prod_shots").update(patch).eq("id", id);
+  if (error) return toast("Save failed", true);
+  if (fn || notes) await db.from("prod_shot_logs").insert({ shot_id: id, file_number: fn || null, camera: s.camera, notes: notes || null });
+  Object.assign(s, patch); render(); toast("Shot logged ✓");
+}
+
+async function logTake(id) {
+  const s = shots.find(x => x.id === id);
+  const fn = $("fn-"+id).value.trim(), notes = $("nt-"+id).value.trim();
+  if (!fn) return toast("Enter a file number for this take", true);
+  const { error } = await db.from("prod_shot_logs").insert({ shot_id: id, file_number: fn, camera: s.camera, notes: notes || null });
+  if (error) return toast("Save failed", true);
+  if (!isDone(s)) { await db.from("prod_shots").update({ status: "shot", logged_at: new Date().toISOString() }).eq("id", id); s.status = "shot"; }
+  $("fn-"+id).value = ""; $("nt-"+id).value = ""; render(); $("shot-"+id).classList.add("open"); toast("Take logged ✓");
+}
+
+function pickThumb(id) { thumbTarget = id; $("thumbInput").click(); }
+$("thumbInput").addEventListener("change", async e => {
+  const file = e.target.files[0]; if (!file || !thumbTarget) return;
+  const id = thumbTarget; thumbTarget = null; e.target.value = "";
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const path = `shotlist/${id}-${Date.now()}.${ext}`;
+  toast("Uploading…");
+  const { error } = await db.storage.from(BUCKET).upload(path, file, { upsert: true });
+  if (error) return toast("Upload failed", true);
+  const { data: { publicUrl } } = db.storage.from(BUCKET).getPublicUrl(path);
+  await db.from("prod_shots").update({ thumbnail_url: publicUrl }).eq("id", id);
+  const s = shots.find(x => x.id === id); s.thumbnail_url = publicUrl;
+  render(); $("shot-"+id).classList.add("open"); toast("Thumbnail attached ✓");
+});
+
+load();
+</script>
+</body>
+</html>
