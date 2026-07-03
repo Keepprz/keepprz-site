@@ -50,6 +50,7 @@
   .cam-screen { background: rgba(160,107,250,0.16); color: var(--purple); }
   .badge.nice { background: rgba(138,135,148,0.16); color: var(--dim); }
   .badge.filenum { background: var(--panel2); color: var(--text); text-transform: none; }
+  .badge.slate { background: var(--text); color: var(--bg); font-weight: 500; }
   .shot-detail { display: none; border-top: 1px solid var(--line); padding: 12px; background: var(--panel2); }
   .shot.open .shot-detail { display: block; }
   .shot-detail label { display: block; font-size: 11px; color: var(--dim); margin: 10px 0 4px; text-transform: uppercase; letter-spacing: 1px; font-family: 'IBM Plex Mono', monospace; }
@@ -151,6 +152,7 @@ function shotCard(s) {
       <div class="checkbox" onclick="event.stopPropagation();quickCheck('${s.id}')">${isDone(s)?"✓":""}</div>
       <div class="shot-desc">${s.description}
         <div class="badges">
+          ${s.slate_code?`<span class="badge slate">${s.slate_code}</span>`:""}
           <span class="badge cam-${s.camera}">${camLabel[s.camera]}</span>
           ${s.priority==="nice"?'<span class="badge nice">nice-to-have</span>':""}
           ${s.file_number?`<span class="badge filenum">#${s.file_number}</span>`:""}
