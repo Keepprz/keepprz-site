@@ -1,0 +1,6 @@
+# keepprz.com — plain static HTML, no build step.
+# This file exists only to point Netlify at the analytics function.
+# Added 2026-09-06 with the first-party pageview beacon.
+
+[build]
+  functions = "netlify/functions"

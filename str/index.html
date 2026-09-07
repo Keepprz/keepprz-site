@@ -556,5 +556,22 @@
   <div class="wrap copyright">© 2026 Keepprz. Keep your guests. Keep your money.</div>
 </footer>
 
+<!-- Pageview beacon. Paste immediately before </body> on every page.
+     Static HTML sites: paste into each page, or into the shared header/footer include.
+     Astro/Vite/11ty: paste once into the base layout.
+     Wrapped in try/catch so it can never affect the page. No cookies, no IDs. -->
+<script>
+  (function () {
+    try {
+      if (navigator.webdriver) return;
+      fetch('/.netlify/functions/hit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: location.pathname, referrer: document.referrer }),
+        keepalive: true,
+      }).catch(function () {});
+    } catch (e) {}
+  })();
+</script>
 </body>
 </html>

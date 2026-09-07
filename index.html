@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Keepprz — Websites, Social Media &amp; Motion Graphics. Tested on my money first.</title>
-<meta name="description" content="Websites, social media, and motion graphics for real businesses — built and run by a twenty-year serial entrepreneur who tested every method on his own businesses with his own money.">
-<meta property="og:title" content="Keepprz — Websites, Social Media &amp; Motion Graphics">
+<title>Keepprz — Websites &amp; Social Media. Tested on my money first.</title>
+<meta name="description" content="Websites and social media for real businesses — built and run by a twenty-year serial entrepreneur who tested every method on his own businesses with his own money.">
+<meta property="og:title" content="Keepprz — Websites &amp; Social Media">
 <meta property="og:description" content="Tested on my money. Proven on my businesses. Now working on yours.">
 <meta property="og:image" content="https://keepprz.com/images/work/work-snscabins.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,6 @@
     <nav class="navlinks">
       <a class="hide" href="/websites/">Websites</a>
       <a class="hide" href="/social/">Social</a>
-      <a class="hide" href="/motion/">Motion</a>
       <a class="hide" href="/work/">Work</a>
       <a class="hide" href="/about/">About</a>
       <a class="btn" href="tel:+18083491077">Call Jason</a>
@@ -33,9 +32,9 @@
 <div class="wrap">
   <section class="hero">
     <div>
-      <span class="pill">Websites · Social Media · Motion Graphics</span>
+      <span class="pill">Websites · Social Media</span>
       <h1>Tested on <span class="accent">my</span> money. Proven on <span class="accent">my</span> businesses. Now working on yours.</h1>
-      <p class="lead">I build websites, run social media, and make videos for real businesses — the same way I've done it for <strong>my own</strong> for twenty years. Flat prices. You own everything. One person who answers the phone.</p>
+      <p class="lead">I build websites and run social media for real businesses — the same way I've done it for <strong>my own</strong> for twenty years. Flat prices. You own everything. One person who answers the phone.</p>
       <div class="cta-row">
         <a class="btn" href="tel:+18083491077">Call Jason — (808) 349-1077</a>
         <a class="ghost" href="/work/">See the work</a>
@@ -77,14 +76,6 @@
           <h3>Social Media</h3>
           <p>You run the business. I run the posting — real footage from your business, edited and published on a schedule.</p>
           <span class="go">See social services →</span>
-        </div>
-      </a>
-      <a class="door" href="/motion/">
-        <div class="dimg" style="background-image:url('/images/work/sns-welcome-poster.jpg')"></div>
-        <div class="dbody">
-          <h3>Motion Graphics</h3>
-          <p>Twenty years of animation and filmmaking. Brand videos, drone, 3D, and short-form that looks like a crew made it.</p>
-          <span class="go">See motion services →</span>
         </div>
       </a>
     </div>
@@ -234,7 +225,6 @@
       <h4>Services</h4>
       <a href="/websites/">Websites</a>
       <a href="/social/">Social Media</a>
-      <a href="/motion/">Motion Graphics</a>
     </div>
     <div class="col">
       <h4>Explore</h4>
@@ -249,8 +239,25 @@
       <a href="#">@keepprz</a>
     </div>
   </div>
-  <div class="wrap copyright">© 2026 Keepprz. Websites · Social Media · Motion Graphics.</div>
+  <div class="wrap copyright">© 2026 Keepprz. Websites · Social Media.</div>
 </footer>
 
+<!-- Pageview beacon. Paste immediately before </body> on every page.
+     Static HTML sites: paste into each page, or into the shared header/footer include.
+     Astro/Vite/11ty: paste once into the base layout.
+     Wrapped in try/catch so it can never affect the page. No cookies, no IDs. -->
+<script>
+  (function () {
+    try {
+      if (navigator.webdriver) return;
+      fetch('/.netlify/functions/hit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: location.pathname, referrer: document.referrer }),
+        keepalive: true,
+      }).catch(function () {});
+    } catch (e) {}
+  })();
+</script>
 </body>
 </html>

@@ -6,3 +6,9 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+
+# Retired pages, parked on disk per the house rule "never delete, move to _to_delete/".
+# MUST stay out of git: Netlify publishes the repo root, so anything committed here
+# would be live at https://keepprz.com/_to_delete/... — which would put the retired
+# /motion/ page back on the internet at a new URL. The files stay on Jason's disk.
+_to_delete/

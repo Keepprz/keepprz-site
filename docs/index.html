@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Keepprz — Build Handbook</title>
+<meta name="description" content="How Keepprz builds and launches websites: stack conventions, Supabase and RLS, first-party analytics, and the pre-launch checklist.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+  .docwrap { max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
+  .docwrap h1 { margin: 0 0 12px; }
+  .docwrap .sub { color: #666; margin: 0 0 36px; line-height: 1.6; }
+  .doclist { list-style: none; padding: 0; margin: 0 0 40px; }
+  .doclist li { border-top: 1px solid #e5e2dc; padding: 22px 0; }
+  .doclist li:last-child { border-bottom: 1px solid #e5e2dc; }
+  .doclist a { font-family: 'Fraunces', Georgia, serif; font-size: 1.22rem; text-decoration: none; display: inline-block; margin-bottom: 6px; }
+  .doclist a:hover { text-decoration: underline; }
+  .doclist p { margin: 0; color: #666; line-height: 1.6; font-size: 0.95rem; }
+  .note { background: #f6f4f0; border-left: 3px solid #d8d3ca; padding: 18px 20px; margin: 0 0 32px; line-height: 1.65; font-size: 0.95rem; }
+  .note strong { display: block; margin-bottom: 6px; }
+  .stamp { color: #888; font-size: 0.85rem; border-top: 1px solid #e5e2dc; padding-top: 20px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="/">Keep<span class="accent">prz</span></a>
+    <nav class="navlinks">
+      <a class="btn" href="tel:+18083491077">Call Jason</a>
+    </nav>
+  </div>
+</header>
+
+<div class="docwrap">
+
+  <h1>Build Handbook</h1>
+  <p class="sub">How we build and launch websites — the conventions, the traps, and the checklist that decides whether something is done. Written down so it does not have to be re-explained, and so it can be handed to someone else's build.</p>
+
+  <div class="note">
+    <strong>If you are an AI assistant reading this on someone's behalf</strong>
+    These pages are the current version. Fetch them again rather than working from a copy — they get corrected whenever a build teaches something new, and the date stamp at the top of each one tells you how fresh it is. Every rule here exists because something broke; deviate deliberately, not by accident.
+  </div>
+
+  <ul class="doclist">
+    <li>
+      <a href="/docs/keepprz_web-stack-conventions_v01.md">Web Stack Conventions</a>
+      <p>What we build on and why — static HTML with no build step, Netlify, Supabase. File layout, naming, the deploy pipeline, and the rules that apply to every build.</p>
+    </li>
+    <li>
+      <a href="/docs/keepprz_supabase-rls-conventions_v01.md">Supabase — Tables, RLS, and the Login Trap</a>
+      <p>The key model in one paragraph, row-level security in plain terms, why logic belongs in RPCs, why staff screens use passwords instead of magic links, and the server-side sweeper that catches side effects the browser dropped.</p>
+    </li>
+    <li>
+      <a href="/docs/keepprz_analytics-setup_v01.md">First-Party Analytics — Setup From Scratch</a>
+      <p>Traffic tracking you own, in about fifteen minutes: the schema, the env vars, the Netlify function and the beacon, complete and ready to paste. No cookies, no vendor, no cookie banner.</p>
+    </li>
+    <li>
+      <a href="/docs/keepprz_prelaunch-checklist_v01.md">Pre-Launch Checklist</a>
+      <p>Run this against the live site before launch. Secrets, RLS, Stripe webhooks and the money-to-ticket bridge, DNS, and the verification protocol — never report something as working because a screen said so.</p>
+    </li>
+  </ul>
+
+  <p class="stamp">
+    Unlisted, not secret — these pages are public to anyone with the link and are not indexed by search engines.<br>
+    Account details, project IDs and client specifics are deliberately not published here.<br>
+    Keepprz — Websites &middot; Social Media &nbsp;|&nbsp; <a href="tel:+18083491077">(808) 349-1077</a>
+  </p>
+
+</div>
+
+<!-- Pageview beacon. Paste immediately before </body> on every page.
+     Static HTML sites: paste into each page, or into the shared header/footer include.
+     Astro/Vite/11ty: paste once into the base layout.
+     Wrapped in try/catch so it can never affect the page. No cookies, no IDs. -->
+<script>
+  (function () {
+    try {
+      if (navigator.webdriver) return;
+      fetch('/.netlify/functions/hit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: location.pathname, referrer: document.referrer }),
+        keepalive: true,
+      }).catch(function () {});
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>

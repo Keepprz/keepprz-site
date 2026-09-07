@@ -1,0 +1,18 @@
+# Netlify _headers — must live at the publish root.
+#
+# /docs/ is the unlisted handbook. It is PUBLIC to anyone with the URL (an agent
+# cannot log in, so it has to be fetchable without auth) — it is simply not
+# indexed and not linked from the nav.
+#
+# Deliberately NO robots.txt Disallow rule: robots.txt is itself public, so a
+# Disallow line would advertise the exact path we are trying to keep quiet.
+# X-Robots-Tag does the job without publishing the address.
+
+/docs/*
+  X-Robots-Tag: noindex, nofollow
+
+# Netlify serves .md as text/markdown, which Chrome downloads instead of showing.
+# Forcing text/plain makes the docs open in the browser for a human and read
+# identically for an agent fetching them.
+/docs/*.md
+  Content-Type: text/plain; charset=utf-8
