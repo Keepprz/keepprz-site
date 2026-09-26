@@ -111,6 +111,12 @@ h2{font-size:38px; margin-bottom:18px;}
 /* video */
 .video-show{max-width:860px; margin:40px auto 0;}
 .video-show video{width:100%; display:block; border-radius:16px; box-shadow:0 26px 64px -32px rgba(42,36,34,0.5); background:#000;}
+/* watch first — the explainer at the top of the homepage */
+.watch-first{padding:36px 0 8px;}
+.watch-first .video-show{margin-top:0; max-width:980px;}
+.speed{display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px; font-size:14px; color:var(--ink-soft);}
+.speed button{font:inherit; font-weight:500; background:var(--sand); color:var(--ink); border:none; border-radius:20px; padding:6px 14px; cursor:pointer;}
+.speed button.on{background:var(--terracotta); color:var(--cream);}
 .video-cap{text-align:center; font-size:14px; color:var(--ink-soft); margin-top:14px;}
 
 /* pricing */

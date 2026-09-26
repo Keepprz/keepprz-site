@@ -28,6 +28,34 @@
   </div>
 </header>
 
+<!-- WATCH FIRST — the explainer film (Jason 2026-09-26: "the first thing they see").
+     Master: /Users/jgd_mbp/Documents/STUDIO/videos/mp4/keepprz/90-second-pitch/keepprz_90-second-pitch-motion_v03.mp4
+     Plays with sound on click (browsers block autoplay with sound); subtitles are burned in. Speed buttons set playbackRate. -->
+<section class="watch-first">
+  <div class="wrap">
+    <div class="video-show">
+      <video id="pitch" controls preload="metadata" playsinline poster="/images/video/keepprz-pitch-poster.jpg">
+        <source src="/images/video/keepprz-pitch-v03.mp4" type="video/mp4">
+      </video>
+      <div class="speed" role="group" aria-label="Playback speed">
+        <span>Speed</span>
+        <button type="button" data-rate="1" class="on">1×</button>
+        <button type="button" data-rate="1.25">1.25×</button>
+        <button type="button" data-rate="1.5">1.5×</button>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var v=document.getElementById('pitch'), bs=document.querySelectorAll('.speed button');
+  for(var i=0;i<bs.length;i++){bs[i].addEventListener('click',function(){
+    v.playbackRate=parseFloat(this.getAttribute('data-rate'));
+    for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on',bs[j]===this);}
+  });}
+})();
+</script>
+
 <!-- HERO -->
 <div class="wrap">
   <section class="hero">
