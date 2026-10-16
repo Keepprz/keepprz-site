@@ -4,3 +4,11 @@
 # Change the target to the Leue Studios site once that site exists.
 /motion/*   /work/   301
 /motion     /work/   301
+
+# 2026-10-16 — TEMPORARY (302): the new home page links to /video/ and /automations/, which are not built yet.
+# Until they exist, send visitors to the closest live page. When /video/index.html and /automations/index.html
+# are created, the real files take over automatically (these rules are not forced) — then delete these lines.
+/video/*        /social/   302
+/video          /social/   302
+/automations/*  /about/    302
+/automations    /about/    302
