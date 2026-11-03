@@ -12,3 +12,6 @@ Thumbs.db
 # would be live at https://keepprz.com/_to_delete/... — which would put the retired
 # /motion/ page back on the internet at a new URL. The files stay on Jason's disk.
 _to_delete/
+
+# Home page mockups for Jason to review on disk. Never published (Netlify publishes the repo root).
+_mockups/

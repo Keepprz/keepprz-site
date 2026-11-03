@@ -23,9 +23,13 @@
     font-family:"Space Grotesk",system-ui,sans-serif;}
   body{padding:20px 16px calc(40px + env(safe-area-inset-bottom)); max-width:560px; margin:0 auto;}
   .mono{font-family:"IBM Plex Mono",monospace;}
-  /* ---- front camera test link (2026-11-03) ---- */
-  .camtest{display:block; margin-bottom:18px; padding:16px; border-radius:var(--r); background:var(--amber); color:#111;
-    font-weight:700; font-size:18px; text-align:center; text-decoration:none;}
+  /* ---- scripts to record (2026-11-03) ---- */
+  .scripts{display:flex; flex-direction:column; gap:8px; margin-bottom:22px;}
+  .scripts h2{margin:0 0 2px; font-size:18px; font-weight:700;}
+  .script{display:block; padding:14px 16px; border-radius:var(--r); background:var(--amber); color:#111; text-decoration:none;}
+  .script b{display:block; font-size:17px; line-height:1.25;}
+  .script span{display:block; margin-top:3px; font-size:13px; color:#3d2c10;}
+  .scripts .none{margin:0; color:var(--muted); font-size:14px;}
   /* ---- header ---- */
   header{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px;}
   .brandmark{font-weight:700; font-size:22px; letter-spacing:-0.5px;}
@@ -95,7 +99,7 @@
 </style>
 </head>
 <body>
-  <a class="camtest" href="/capture/capture_camera-test_v01.html">Front camera test</a>
+  <div class="scripts" id="scripts"><h2>Scripts to record</h2><p class="none" id="scriptsNote">Loading…</p></div>
   <header>
     <div class="brandmark">capture<span class="dot">.</span></div>
     <div class="gps" id="gps"><span class="pip"></span><span id="gpsTxt">locating…</span></div>
@@ -284,6 +288,28 @@ async function loadRecent(){
     <span class="b">${(r.brand||"").split(" ")[0]}</span></a>`).join("");
 }
 loadRecent();
+
+/* ---- scripts to record ---- */
+async function loadScripts(){
+  const note = document.getElementById("scriptsNote");
+  const { data, error } = await sb.from("capture_scripts")
+    .select("id,project,title,body").eq("status","to_record").order("sort_order").order("created_at");
+  if(error){ note.textContent = "The script list did not load. Check the connection and reload."; return; }
+  if(!data.length){ note.textContent = "No scripts waiting."; return; }
+  note.remove();
+  const host = document.getElementById("scripts");
+  data.forEach(s=>{
+    const a = document.createElement("a");
+    a.className = "script";
+    a.href = "/capture/capture_recorder_v01.html?id=" + encodeURIComponent(s.id);
+    const title = document.createElement("b"); title.textContent = s.title;
+    const words = s.body.trim().split(/\s+/).length;
+    const info = document.createElement("span"); info.textContent = `${s.project} · about ${Math.max(5,Math.round(words/150*60/5)*5)} seconds`;
+    a.append(title, info);
+    host.appendChild(a);
+  });
+}
+loadScripts();
 </script>
 </body>
 </html>
