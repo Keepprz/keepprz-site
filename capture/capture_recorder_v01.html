@@ -1,9 +1,11 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- capture_recorder_v01 · 2026-11-03 · Talking-head recorder: one script fitted to one white screen, front camera.
-     Scripts come from Supabase capture_scripts. Takes stay in this browser until saved to Photos,
-     then the iPhone cable route takes them off the phone. Tested settings: 4K, 25 Mbps (take of 2026-11-03). -->
+<!-- capture_recorder_v01 · v1.1 2026-11-03 · Talking-head recorder: one shot fitted to one white screen, front camera.
+     The list: capture_shotlist_v01.json. Tap a shot, the camera opens on its script; Record, Stop, Good, back to the
+     list with the shot green. Green and the takes live on this phone (capture_takes_v01.js) until the list's
+     Save button sends them to Photos, then the iPhone cable route takes them off the phone.
+     Tested settings: 4K, 25 Mbps (take of 2026-11-03). -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
@@ -46,49 +48,54 @@
   .takes { display: flex; flex-wrap: wrap; gap: 6px; }
   .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .wide { grid-column: 1 / -1; }
-  .saved { color: var(--good); font-weight: 600; }
   #message { color: var(--rec); font-size: 16px; line-height: 1.4; }
   h1 { font-size: 20px; line-height: 1.2; margin: 0; }
+  #setupLine { font-size: 13px; line-height: 1.25; color: var(--muted); flex: none; }
+  #goodBtn { background: var(--good); border-color: var(--good); color: #fff; font-size: 22px; min-height: 66px; }
+  .bar .link { flex: none; }
 </style>
 </head>
 <body>
 
 <section id="openView">
-  <div class="bar"><a href="/capture/">‹ Scripts</a></div>
+  <div class="bar"><a href="/capture/">‹ List</a></div>
   <h1 id="openTitle">Loading the script…</h1>
   <p id="message" hidden></p>
   <button class="primary" id="startBtn" disabled>Open the camera</button>
   <p class="muted">Turn your brightness all the way up. Allow the camera and the microphone when Safari asks.</p>
-  <button class="link" id="openTakesBtn" hidden></button>
 </section>
 
 <section id="recView" hidden>
+  <p id="setupLine"></p>
   <div id="scriptBox"><p id="scriptText"></p></div>
   <div class="stage"><video id="preview" playsinline muted autoplay></video><div id="count" hidden></div></div>
   <div class="bar" id="controlsBar">
-    <a href="/capture/" id="backLink">‹ Scripts</a>
+    <a class="backLink" href="/capture/">‹ List</a>
+    <button class="link" id="seeTakesBtn" hidden></button>
     <div class="sound" id="soundChips"></div>
   </div>
   <button id="recBtn" disabled>Record</button>
 </section>
 
 <section id="doneView" hidden>
-  <div class="bar"><a href="/capture/">‹ Scripts</a><span class="muted" id="doneTitle"></span></div>
+  <div class="bar"><a class="backLink" href="/capture/">‹ List</a><span class="muted" id="doneTitle"></span></div>
   <video id="playback" playsinline controls></video>
   <div class="takes" id="takeChips"></div>
   <p class="muted" id="takeFacts"></p>
   <div class="actions">
-    <button class="primary wide" id="saveBtn">Save to Photos</button>
-    <button id="retakeBtn">Retake</button>
-    <button id="doneBtn">Done with script</button>
+    <button class="wide" id="goodBtn">Good</button>
+    <button class="wide" id="retakeBtn">Another take</button>
   </div>
-  <p class="muted" id="doneNote">Save to Photos opens the share sheet. Choose Save Video. The cable takes it from there.</p>
+  <div class="bar">
+    <button class="link" id="notGoodBtn" hidden>Not good after all</button>
+    <button class="link" id="saveBtn">Save this take to Photos now</button>
+  </div>
+  <p class="muted" id="doneNote"></p>
 </section>
 
+<script src="/capture/capture_takes_v01.js"></script>
 <script>
 "use strict";
-const SUPABASE_URL = "https://ijctbrncqzdhrizhwpor.supabase.co";
-const SUPABASE_KEY = "sb_publishable_U0xEmLq4ajPPTtbYZ1_hJQ_G17RZL4k"; // publishable key: can only read scripts to record and mark one recorded
 const SIZE = { w: 3840, h: 2160, fps: 30 };
 const MBPS = 25;
 const SOUNDS = [
@@ -101,30 +108,12 @@ const $ = (id) => document.getElementById(id);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const show = (id) => ["openView", "recView", "doneView"].forEach((v) => { $(v).hidden = v !== id; });
 const mb = (bytes) => (bytes / 1048576).toFixed(0) + " MB";
-const scriptId = new URLSearchParams(location.search).get("id");
+const scriptId = new URLSearchParams(location.search).get("shot");
+const listLink = "/capture/#shot-" + encodeURIComponent(scriptId || "");
+const T = CaptureTakes;
 
 const S = { script: null, stream: null, video: null, audio: null, rec: null, wake: null, sound: SOUNDS[0], current: null, takes: [], selected: null };
 try { const kept = localStorage.getItem("capture-sound"); S.sound = SOUNDS.find((s) => s.id === kept) || SOUNDS[0]; } catch (e) {}
-
-/* ---- scripts ---- */
-const restHeaders = { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY };
-
-async function loadScript() {
-  if (!scriptId) throw new Error("No script was chosen.");
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/capture_scripts?select=id,project,title,body&id=eq.${encodeURIComponent(scriptId)}`, { headers: restHeaders });
-  if (!r.ok) throw new Error("The script list did not answer (" + r.status + "). Check the connection and reload.");
-  const rows = await r.json();
-  return rows[0] || null;
-}
-
-async function markRecorded() {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/capture_mark_recorded`, {
-    method: "POST",
-    headers: { ...restHeaders, "Content-Type": "application/json" },
-    body: JSON.stringify({ script_id: scriptId }),
-  });
-  if (!r.ok) throw new Error("status " + r.status);
-}
 
 /* ---- fit the whole script on one screen ---- */
 function fitScript() {
@@ -141,43 +130,8 @@ function fitScript() {
 }
 addEventListener("resize", () => { if (!$("recView").hidden) fitScript(); });
 
-/* ---- takes: every piece goes to IndexedDB as it records, so a crash keeps what was shot ---- */
-let dbPromise = null;
-function openDb() {
-  if (dbPromise) return dbPromise;
-  dbPromise = new Promise((resolve, reject) => {
-    const req = indexedDB.open("capture-takes", 1);
-    req.onupgradeneeded = () => {
-      const takes = req.result.createObjectStore("takes", { keyPath: "id" });
-      takes.createIndex("script", "script");
-      req.result.createObjectStore("chunks", { keyPath: ["take", "seq"] });
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-  return dbPromise;
-}
-function tx(stores, mode, fn) {
-  return openDb().then((db) => new Promise((resolve, reject) => {
-    const t = db.transaction(stores, mode);
-    let out;
-    Promise.resolve(fn(t)).then((v) => { out = v; });
-    t.oncomplete = () => resolve(out);
-    t.onerror = () => reject(t.error);
-    t.onabort = () => reject(t.error);
-  }));
-}
-const reqP = (r) => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
-const putTake = (take) => tx(["takes"], "readwrite", (t) => reqP(t.objectStore("takes").put(take)));
-const putChunk = (take, seq, blob) => tx(["chunks"], "readwrite", (t) => reqP(t.objectStore("chunks").put({ take, seq, blob })));
-const takesFor = (script) => tx(["takes"], "readonly", (t) => reqP(t.objectStore("takes").index("script").getAll(script)));
-const chunkRange = (id) => IDBKeyRange.bound([id, 0], [id, Number.MAX_SAFE_INTEGER]);
-async function takeBlob(take) {
-  const rows = await tx(["chunks"], "readonly", (t) => reqP(t.objectStore("chunks").getAll(chunkRange(take.id))));
-  rows.sort((a, b) => a.seq - b.seq);
-  return new Blob(rows.map((r) => r.blob), { type: take.mime.split(";")[0] });
-}
-const deleteTake = (id) => tx(["takes", "chunks"], "readwrite", (t) => { t.objectStore("takes").delete(id); t.objectStore("chunks").delete(chunkRange(id)); });
+/* ---- takes on this phone that still have their video ---- */
+const liveTakes = async () => (await T.forScript(scriptId).catch(() => [])).filter((t) => !t.cleared).sort((a, b) => a.n - b.n);
 
 /* ---- camera ---- */
 function fail(message) { $("message").textContent = message; $("message").hidden = false; show("openView"); }
@@ -225,10 +179,14 @@ async function startCamera() {
   } catch (e) { return fail(explain(e)); }
   S.video = S.stream.getVideoTracks()[0];
   S.audio = S.stream.getAudioTracks()[0];
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {} // ask Safari not to clear the takes
   show("recView");
   $("controlsBar").style.visibility = "";
   $("recBtn").textContent = "Record";
   $("recBtn").disabled = true;
+  const earlier = await liveTakes();
+  $("seeTakesBtn").hidden = !earlier.length;
+  $("seeTakesBtn").textContent = earlier.length === 1 ? "1 take" : `${earlier.length} takes`;
   renderSound();
   fitScript();
   const v = $("preview");
@@ -258,18 +216,18 @@ async function record() {
   count.hidden = true;
 
   const when = new Date();
-  const earlier = await takesFor(scriptId).catch(() => []);
+  const earlier = await T.forScript(scriptId).catch(() => []);
   const n = earlier.reduce((m, t) => Math.max(m, t.n), 0) + 1;
-  const take = { id: "take-" + when.getTime(), script: scriptId, n, when: when.toISOString(), mime, sound: S.sound.id, saved: false, finished: false, seconds: 0, bytes: 0 };
+  const take = { id: "take-" + when.getTime(), script: scriptId, n, when: when.toISOString(), mime, sound: S.sound.id, good: false, saved: false, finished: false, seconds: 0, bytes: 0 };
   const cur = S.current = { take, seq: 0, chain: Promise.resolve(), t0: performance.now(), done: false, lost: 0 };
-  try { await putTake(take); } catch (e) { return fail("This phone would not store the take: " + e.name + ". Free some space, then reload."); }
+  try { await T.put(take); } catch (e) { return fail("This phone would not store the take: " + e.name + ". Free some space, then reload."); }
 
   S.rec = new MediaRecorder(S.stream, { mimeType: mime, videoBitsPerSecond: MBPS * 1e6, audioBitsPerSecond: 192000 });
   S.rec.ondataavailable = (e) => {
     if (!e.data || !e.data.size) return;
     const seq = cur.seq++;
     take.bytes += e.data.size;
-    cur.chain = cur.chain.then(() => putChunk(take.id, seq, e.data)).catch(() => { cur.lost++; });
+    cur.chain = cur.chain.then(() => T.putChunk(take.id, seq, e.data)).catch(() => { cur.lost++; });
   };
   S.rec.onstop = () => finish(cur);
   S.rec.start(1000);
@@ -288,17 +246,18 @@ async function finish(cur) {
   cur.take.seconds = (performance.now() - cur.t0) / 1000;
   cur.take.finished = true;
   await cur.chain;
-  try { await putTake(cur.take); } catch (e) {}
+  try { await T.put(cur.take); } catch (e) {}
   await openTakes(cur.take.id);
-  if (cur.lost) $("doneNote").textContent = `The phone could not store ${cur.lost} seconds of this take, so it has gaps. Free some space and retake it.`;
+  if (cur.lost) $("doneNote").textContent = `The phone could not store ${cur.lost} seconds of this take, so it has gaps. Free some space and record another.`;
 }
 
 /* ---- takes view ---- */
 async function openTakes(selectId) {
   stopCamera();
-  S.takes = (await takesFor(scriptId).catch(() => [])).sort((a, b) => a.n - b.n);
+  S.takes = await liveTakes();
   show("doneView");
-  $("doneTitle").textContent = S.script ? S.script.title : "";
+  $("doneTitle").textContent = `${S.script.code} · ${S.script.title}`;
+  $("doneNote").textContent = "";
   if (!S.takes.length) { await startCamera(); return; }
   await selectTake(S.takes.find((t) => t.id === selectId) || S.takes[S.takes.length - 1]);
 }
@@ -306,7 +265,7 @@ async function openTakes(selectId) {
 let playUrl = null;
 async function selectTake(take) {
   S.selected = take;
-  const blob = await takeBlob(take);
+  const blob = await T.blob(take);
   S.selectedBlob = blob;
   if (playUrl) URL.revokeObjectURL(playUrl);
   playUrl = URL.createObjectURL(blob);
@@ -316,27 +275,42 @@ async function selectTake(take) {
   S.takes.forEach((t) => {
     const b = document.createElement("button");
     b.className = "chip";
-    b.textContent = `Take ${t.n}` + (t.saved ? " ✓" : "");
+    b.textContent = `Take ${t.n}` + (t.good ? " · good" : "");
     b.setAttribute("aria-pressed", String(t === take));
     b.onclick = () => selectTake(t);
     host.appendChild(b);
   });
   const length = take.finished ? `${take.seconds.toFixed(0)} s · ` : "Stopped early · ";
-  $("takeFacts").textContent = `${length}${mb(blob.size)} · ${take.sound}` + (take.saved ? " · shared" : "");
-  $("saveBtn").textContent = take.saved ? "Save to Photos again" : "Save to Photos";
-  doneArmed = false;
-  $("doneBtn").textContent = "Done with script";
+  $("takeFacts").textContent = `${length}${mb(blob.size)} · ${take.sound}` + (take.saved ? " · sent to Photos" : "");
+  $("saveBtn").textContent = take.saved ? "Save this take to Photos again" : "Save this take to Photos now";
+  $("notGoodBtn").hidden = !take.good;
+  $("goodBtn").textContent = take.good ? "Good · back to the list" : "Good";
 }
 
-function fileName(take) {
-  const slug = (S.script ? S.script.title : "script").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
-  const project = S.script ? S.script.project : "capture";
-  return `${project}_${slug}_take${String(take.n).padStart(2, "0")}.${take.mime.includes("webm") ? "webm" : "mp4"}`;
+async function markGood() {
+  const take = S.selected;
+  take.good = true;
+  $("goodBtn").disabled = true;
+  try { await T.put(take); }
+  catch (e) {
+    $("goodBtn").disabled = false;
+    $("doneNote").textContent = "This phone would not store that: " + e.name + ". Free some space and tap Good again.";
+    return;
+  }
+  location.href = listLink;
+}
+
+async function markNotGood() {
+  const take = S.selected;
+  take.good = false;
+  try { await T.put(take); } catch (e) {}
+  S.takes = await liveTakes();
+  await selectTake(S.takes.find((t) => t.id === take.id));
 }
 
 async function saveTake() {
   const take = S.selected;
-  const file = new File([S.selectedBlob], fileName(take), { type: S.selectedBlob.type });
+  const file = new File([S.selectedBlob], T.fileName(S.script, take), { type: S.selectedBlob.type });
   try {
     if (!navigator.canShare || !navigator.canShare({ files: [file] })) throw new Error("no share sheet here");
     await navigator.share({ files: [file] });
@@ -346,28 +320,9 @@ async function saveTake() {
     return;
   }
   take.saved = true;
-  try { await putTake(take); } catch (e) {}
+  try { await T.put(take); } catch (e) {}
   await selectTake(take);
-  $("doneNote").textContent = "Sent. Check it is in Photos before tapping Done with script.";
-}
-
-let doneArmed = false;
-async function doneWithScript() {
-  if (!S.takes.some((t) => t.saved) && !doneArmed) {
-    doneArmed = true;
-    $("doneBtn").textContent = "Delete takes? Tap again";
-    $("doneNote").textContent = "Nothing has gone to Photos. Tapping again deletes these takes for good.";
-    return;
-  }
-  $("doneBtn").disabled = true;
-  try { await markRecorded(); }
-  catch (e) {
-    $("doneBtn").disabled = false;
-    $("doneNote").textContent = "The script list did not answer (" + e.message + "). Your takes are safe. Try again.";
-    return;
-  }
-  for (const t of S.takes) { try { await deleteTake(t.id); } catch (e) {} }
-  location.href = "/capture/";
+  $("doneNote").textContent = "Sent. Check it is in Photos.";
 }
 
 /* ---- wiring ---- */
@@ -380,27 +335,24 @@ $("recBtn").onclick = () => {
   } else { record(); }
 };
 $("saveBtn").onclick = saveTake;
+$("goodBtn").onclick = markGood;
+$("notGoodBtn").onclick = markNotGood;
 $("retakeBtn").onclick = () => { $("playback").removeAttribute("src"); S.rec = null; startCamera(); };
-$("doneBtn").onclick = doneWithScript;
-$("openTakesBtn").onclick = () => openTakes();
+$("seeTakesBtn").onclick = () => openTakes();
+document.querySelectorAll(".backLink").forEach((a) => { a.href = listLink; });
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S.stream) askWake(); });
 
 (async function boot() {
   try {
-    S.script = await loadScript();
+    const list = await T.shotList();
+    S.script = list.shots.find((s) => s.code === scriptId) || null;
   } catch (e) { $("openTitle").textContent = "No script loaded"; $("message").textContent = e.message; $("message").hidden = false; return; }
-  const earlier = await takesFor(scriptId).catch(() => []);
-  if (earlier.length) {
-    $("openTakesBtn").hidden = false;
-    $("openTakesBtn").textContent = earlier.length === 1 ? "See the 1 take already recorded" : `See the ${earlier.length} takes already recorded`;
-  }
-  if (!S.script) {
-    $("openTitle").textContent = "This script is already marked recorded";
-    return;
-  }
-  $("openTitle").textContent = S.script.title;
+  if (!S.script) { $("openTitle").textContent = "That shot is not on the list"; return; }
+  $("openTitle").textContent = `${S.script.code} · ${S.script.title}`;
+  $("setupLine").textContent = `${S.script.code} · ${S.script.setup}`;
   $("scriptText").textContent = S.script.body;
   $("startBtn").disabled = false;
+  startCamera(); // straight to the script; the button above is only for when the camera is refused
 })();
 </script>
 </body>

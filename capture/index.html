@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
+<script src="/capture/capture_takes_v01.js"></script>
 <style>
   /* ---- tokens ---- */
   :root{
@@ -23,13 +24,26 @@
     font-family:"Space Grotesk",system-ui,sans-serif;}
   body{padding:20px 16px calc(40px + env(safe-area-inset-bottom)); max-width:560px; margin:0 auto;}
   .mono{font-family:"IBM Plex Mono",monospace;}
-  /* ---- scripts to record (2026-11-03) ---- */
+  /* ---- shot list (2026-11-03) ---- */
   .scripts{display:flex; flex-direction:column; gap:8px; margin-bottom:22px;}
   .scripts h2{margin:0 0 2px; font-size:18px; font-weight:700;}
-  .script{display:block; padding:14px 16px; border-radius:var(--r); background:var(--amber); color:#111; text-decoration:none;}
-  .script b{display:block; font-size:17px; line-height:1.25;}
-  .script span{display:block; margin-top:3px; font-size:13px; color:#3d2c10;}
   .scripts .none{margin:0; color:var(--muted); font-size:14px;}
+  .scripts details{display:block;}
+  .scripts summary{font-size:15px; font-weight:700; padding:10px 2px 2px; cursor:pointer;}
+  .scripts .setup{margin:0 2px 8px; font-size:13px; line-height:1.3; color:var(--muted);}
+  .script{display:flex; align-items:center; gap:12px; padding:10px 12px; margin-bottom:8px; border-radius:var(--r); background:var(--amber); color:#111; text-decoration:none;}
+  .script i{flex:none; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:14px; font-weight:700; background:#111; color:var(--amber);}
+  .script b{display:block; font-size:17px; line-height:1.2;}
+  .script span{display:block; margin-top:2px; font-size:13px; color:#3d2c10;}
+  .script.done{background:var(--ok);}
+  .script.done i{background:#0d3d24; color:#fff; font-size:22px;}
+  .script.done span{color:#0d3d24;}
+  .script.here{outline:3px solid var(--text); outline-offset:2px;}
+  .photos{padding:12px 14px; border:1px solid var(--line); border-radius:var(--r); background:var(--panel); display:flex; flex-direction:column; gap:8px;}
+  .photos[hidden]{display:none;}
+  .photos p{margin:0; font-size:14px; line-height:1.35;}
+  .photos button{font:inherit; font-weight:600; padding:13px 14px; border-radius:12px; border:0; background:var(--text); color:#111; cursor:pointer;}
+  .photos button.quiet{background:none; border:1px solid var(--line); color:var(--text); font-weight:500;}
   /* ---- header ---- */
   header{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px;}
   .brandmark{font-weight:700; font-size:22px; letter-spacing:-0.5px;}
@@ -99,7 +113,16 @@
 </style>
 </head>
 <body>
-  <div class="scripts" id="scripts"><h2>Scripts to record</h2><p class="none" id="scriptsNote">Loading…</p></div>
+  <div class="scripts" id="scripts">
+    <h2 id="shotHead">Shot list</h2>
+    <div class="photos" id="photos" hidden>
+      <p id="photosNote"></p>
+      <button id="photosBtn" hidden></button>
+      <button class="quiet" id="clearBtn" hidden></button>
+    </div>
+    <p class="none" id="scriptsNote">Loading…</p>
+    <div id="shotRows"></div>
+  </div>
   <header>
     <div class="brandmark">capture<span class="dot">.</span></div>
     <div class="gps" id="gps"><span class="pip"></span><span id="gpsTxt">locating…</span></div>
@@ -289,27 +312,97 @@ async function loadRecent(){
 }
 loadRecent();
 
-/* ---- scripts to record ---- */
-async function loadScripts(){
+/* ---- shot list: green comes from the takes on this phone (capture_takes_v01.js) ---- */
+const SHARE_AT_ONCE = 5;
+let shareSize = SHARE_AT_ONCE, shareNow = [], list = null, clearArmed = false;
+
+async function loadShots(){
   const note = document.getElementById("scriptsNote");
-  const { data, error } = await sb.from("capture_scripts")
-    .select("id,project,title,body").eq("status","to_record").order("sort_order").order("created_at");
-  if(error){ note.textContent = "The script list did not load. Check the connection and reload."; return; }
-  if(!data.length){ note.textContent = "No scripts waiting."; return; }
+  try{ list = await CaptureTakes.shotList(); }
+  catch(e){ note.textContent = e.message; return; }
   note.remove();
-  const host = document.getElementById("scripts");
-  data.forEach(s=>{
-    const a = document.createElement("a");
-    a.className = "script";
-    a.href = "/capture/capture_recorder_v01.html?id=" + encodeURIComponent(s.id);
-    const title = document.createElement("b"); title.textContent = s.title;
-    const words = s.body.trim().split(/\s+/).length;
-    const info = document.createElement("span"); info.textContent = `${s.project} · about ${Math.max(5,Math.round(words/150*60/5)*5)} seconds`;
-    a.append(title, info);
-    host.appendChild(a);
+  const takes = await CaptureTakes.all().catch(()=>[]);
+  const green = new Set(takes.filter(t=>t.good).map(t=>t.script));
+  const done = list.shots.filter(s=>green.has(s.code)).length;
+  document.getElementById("shotHead").textContent = `Shot list · ${done} of ${list.shots.length} done`;
+  const here = decodeURIComponent(location.hash.replace("#shot-",""));
+  const host = document.getElementById("shotRows");
+  host.textContent = "";
+  list.sections.forEach(sec=>{
+    const secDone = sec.shots.filter(s=>green.has(s.code)).length;
+    const d = document.createElement("details");
+    d.open = secDone < sec.shots.length || sec.shots.some(s=>s.code===here);
+    const sum = document.createElement("summary"); sum.textContent = `${sec.name} · ${secDone} of ${sec.shots.length}`;
+    const setup = document.createElement("p"); setup.className = "setup"; setup.textContent = sec.setup;
+    d.append(sum, setup);
+    sec.shots.forEach(s=>{
+      const a = document.createElement("a");
+      a.id = "shot-" + s.code;
+      a.className = "script" + (green.has(s.code) ? " done" : "") + (s.code===here ? " here" : "");
+      a.href = "/capture/capture_recorder_v01.html?shot=" + encodeURIComponent(s.code);
+      const icon = document.createElement("i"); icon.textContent = green.has(s.code) ? "✓" : s.code;
+      const text = document.createElement("div");
+      const title = document.createElement("b"); title.textContent = s.title;
+      const words = s.body.trim().split(/\s+/).length;
+      const info = document.createElement("span"); info.textContent = `${s.code} · about ${Math.max(5,Math.round(words/150*60/5)*5)} seconds`;
+      text.append(title, info);
+      a.append(icon, text);
+      d.appendChild(a);
+    });
+    host.appendChild(d);
   });
+  if(here){ const el = document.getElementById("shot-"+here); if(el) el.scrollIntoView({block:"center"}); }
+  await refreshPhotos();
 }
-loadScripts();
+
+/* Good takes live only in this browser until they reach Photos. The files are read ahead of the tap,
+   because Safari only opens the share sheet straight after one. */
+async function refreshPhotos(){
+  const box = document.getElementById("photos"), noteEl = document.getElementById("photosNote");
+  const btn = document.getElementById("photosBtn"), clr = document.getElementById("clearBtn");
+  const takes = await CaptureTakes.all().catch(()=>[]);
+  const waiting = takes.filter(t=>t.good && !t.saved && !t.cleared).sort((a,b)=>a.when.localeCompare(b.when));
+  const savedScripts = new Set(takes.filter(t=>t.saved).map(t=>t.script));
+  const spare = takes.filter(t=>!t.cleared && (t.saved || (!t.good && savedScripts.has(t.script))));
+  box.hidden = !waiting.length && !spare.length;
+  noteEl.textContent = waiting.length
+    ? `${waiting.length} good ${waiting.length===1?"take is":"takes are"} only on this phone until saved to Photos. Choose Save Video.`
+    : "Every good take has gone to Photos. Check they are there before freeing space.";
+  shareNow = [];
+  for(const t of waiting.slice(0,shareSize)){
+    const shot = list.shots.find(s=>s.code===t.script);
+    if(!shot) continue;
+    const blob = await CaptureTakes.blob(t);
+    shareNow.push({ take:t, file:new File([blob], CaptureTakes.fileName(shot,t), {type:blob.type}) });
+  }
+  btn.hidden = !shareNow.length;
+  btn.textContent = waiting.length > shareNow.length ? `Save the next ${shareNow.length} to Photos` : `Save ${shareNow.length===1?"it":"them"} to Photos`;
+  clr.hidden = !spare.length;
+  clearArmed = false;
+  clr.textContent = `Free space: ${spare.length} ${spare.length===1?"take":"takes"} already handled`;
+  clr.onclick = async ()=>{
+    if(!clearArmed){ clearArmed = true; clr.textContent = "Tap again. Shots stay green; these videos leave this page."; return; }
+    for(const t of spare){ await CaptureTakes.clearPieces(t.id); t.cleared = true; await CaptureTakes.put(t); }
+    await refreshPhotos();
+  };
+}
+
+document.getElementById("photosBtn").onclick = async ()=>{
+  const noteEl = document.getElementById("photosNote");
+  const files = shareNow.map(x=>x.file);
+  try{
+    if(!navigator.canShare || !navigator.canShare({files})) throw new Error("this browser has no share sheet for these");
+    await navigator.share({files});
+  }catch(e){
+    if(e.name==="AbortError") return; // he closed the share sheet: not saved
+    if(shareSize>1){ shareSize = 1; await refreshPhotos(); document.getElementById("photosNote").textContent = "That many at once did not work. Now saving one at a time. Tap again."; return; }
+    noteEl.textContent = "The share sheet did not open: " + e.message;
+    return;
+  }
+  for(const x of shareNow){ x.take.saved = true; await CaptureTakes.put(x.take); }
+  await refreshPhotos();
+};
+loadShots();
 </script>
 </body>
 </html>
