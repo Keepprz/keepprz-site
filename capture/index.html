@@ -118,6 +118,8 @@
     <div class="photos" id="photos" hidden>
       <p id="photosNote"></p>
       <button id="photosBtn" hidden></button>
+      <button id="landedYes" hidden></button>
+      <button class="quiet" id="landedNo" hidden>No, send again</button>
       <button class="quiet" id="clearBtn" hidden></button>
     </div>
     <p class="none" id="scriptsNote">Loading…</p>
@@ -355,33 +357,44 @@ async function loadShots(){
   await refreshPhotos();
 }
 
-/* Good takes live only in this browser until they reach Photos. The files are read ahead of the tap,
-   because Safari only opens the share sheet straight after one. */
+/* Good takes live only in this browser until Jason has SEEN them arrive. The phone cannot tell a page whether a file
+   landed: the share sheet closing only means it closed. So saved = sent, confirmed = he said it is there, and only a
+   confirmed take can be freed. The files are read ahead of the tap, because Safari only opens the share sheet straight
+   after one. */
 async function refreshPhotos(){
   const box = document.getElementById("photos"), noteEl = document.getElementById("photosNote");
   const btn = document.getElementById("photosBtn"), clr = document.getElementById("clearBtn");
+  const yes = document.getElementById("landedYes"), no = document.getElementById("landedNo");
   const takes = await CaptureTakes.all().catch(()=>[]);
-  const waiting = takes.filter(t=>t.good && !t.saved && !t.cleared).sort((a,b)=>a.when.localeCompare(b.when));
-  const savedScripts = new Set(takes.filter(t=>t.saved).map(t=>t.script));
-  const spare = takes.filter(t=>!t.cleared && (t.saved || (!t.good && savedScripts.has(t.script))));
+  const waiting = takes.filter(t=>t.good && !t.confirmed && !t.cleared).sort((a,b)=>a.when.localeCompare(b.when));
+  const asking = waiting.filter(t=>t.saved), toSend = waiting.filter(t=>!t.saved);
+  const confirmedScripts = new Set(takes.filter(t=>t.confirmed).map(t=>t.script));
+  const spare = takes.filter(t=>!t.cleared && (t.confirmed || (!t.good && confirmedScripts.has(t.script))));
   box.hidden = !waiting.length && !spare.length;
-  noteEl.textContent = waiting.length
-    ? `${waiting.length} good ${waiting.length===1?"take is":"takes are"} only on this phone until saved to Photos. Choose Save Video.`
-    : "Every good take has gone to Photos. Check they are there before freeing space.";
+  noteEl.textContent = asking.length
+    ? `Open Photos and look. ${asking.length===1?"Is the newest video there?":`Are the ${asking.length} newest videos there?`} If you AirDropped, check your Mac instead.`
+    : waiting.length
+      ? `${waiting.length} good ${waiting.length===1?"take is":"takes are"} only in this app until saved to Photos. Choose Save Video.`
+      : "Every good take is confirmed in Photos.";
+  yes.hidden = no.hidden = !asking.length;
+  yes.textContent = asking.length===1 ? "Yes, I can see it" : "Yes, I can see them";
+  const markAsked = async (fields)=>{ for(const t of asking){ Object.assign(t,fields); await CaptureTakes.put(t); } await refreshPhotos(); };
+  yes.onclick = ()=>markAsked({confirmed:true});
+  no.onclick = ()=>markAsked({saved:false});
   shareNow = [];
-  for(const t of waiting.slice(0,shareSize)){
+  if(!asking.length) for(const t of toSend.slice(0,shareSize)){
     const shot = list.shots.find(s=>s.code===t.script);
     if(!shot) continue;
     const blob = await CaptureTakes.blob(t);
     shareNow.push({ take:t, file:new File([blob], CaptureTakes.fileName(shot,t), {type:blob.type}) });
   }
   btn.hidden = !shareNow.length;
-  btn.textContent = waiting.length > shareNow.length ? `Save the next ${shareNow.length} to Photos` : `Save ${shareNow.length===1?"it":"them"} to Photos`;
+  btn.textContent = toSend.length > shareNow.length ? `Save the next ${shareNow.length} to Photos` : `Save ${shareNow.length===1?"it":"them"} to Photos`;
   clr.hidden = !spare.length;
   clearArmed = false;
-  clr.textContent = `Free space: ${spare.length} ${spare.length===1?"take":"takes"} already handled`;
+  clr.textContent = `Free space: ${spare.length} ${spare.length===1?"take":"takes"} you checked`;
   clr.onclick = async ()=>{
-    if(!clearArmed){ clearArmed = true; clr.textContent = "Tap again. Shots stay green; these videos leave this page."; return; }
+    if(!clearArmed){ clearArmed = true; clr.textContent = "Tap again. Shots stay green; these videos leave this app."; return; }
     for(const t of spare){ await CaptureTakes.clearPieces(t.id); t.cleared = true; await CaptureTakes.put(t); }
     await refreshPhotos();
   };
@@ -394,7 +407,7 @@ document.getElementById("photosBtn").onclick = async ()=>{
     if(!navigator.canShare || !navigator.canShare({files})) throw new Error("this browser has no share sheet for these");
     await navigator.share({files});
   }catch(e){
-    if(e.name==="AbortError") return; // he closed the share sheet: not saved
+    if(e.name==="AbortError") return; // he closed the share sheet: nothing sent
     if(shareSize>1){ shareSize = 1; await refreshPhotos(); document.getElementById("photosNote").textContent = "That many at once did not work. Now saving one at a time. Tap again."; return; }
     noteEl.textContent = "The share sheet did not open: " + e.message;
     return;

@@ -1,7 +1,8 @@
 /* capture_takes_v01 · 2026-11-03 · The takes on this phone, shared by the list and the recorder.
    Every piece of a take goes to IndexedDB as it records, so a crash keeps what was shot.
-   A take with good=true turns its shot green. Freeing space drops a take's pieces (cleared=true) but
-   keeps its record, so the shot stays green. */
+   A take with good=true turns its shot green. saved=true means it was sent; confirmed=true means Jason saw it arrive,
+   and only then can it be freed. Freeing space drops a take's pieces (cleared=true) but keeps its record, so the shot
+   stays green. */
 "use strict";
 const CaptureTakes = (() => {
   let dbPromise = null;

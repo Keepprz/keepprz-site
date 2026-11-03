@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- capture_recorder_v01 · v1.1 2026-11-03 · Talking-head recorder: one shot fitted to one white screen, front camera.
+<!-- capture_recorder_v01 · v1.2 2026-11-03 (a take counts as saved only once Jason says it arrived) · Talking-head recorder: one shot fitted to one white screen, front camera.
      The list: capture_shotlist_v01.json. Tap a shot, the camera opens on its script; Record, Stop, Good, back to the
      list with the shot green. Green and the takes live on this phone (capture_takes_v01.js) until the list's
      Save button sends them to Photos, then the iPhone cable route takes them off the phone.
@@ -91,6 +91,10 @@
     <button class="link" id="saveBtn">Save this take to Photos now</button>
   </div>
   <p class="muted" id="doneNote"></p>
+  <div class="actions" id="landedRow" hidden>
+    <button id="landedYes">Yes, I can see it</button>
+    <button id="landedNo">No</button>
+  </div>
 </section>
 
 <script src="/capture/capture_takes_v01.js"></script>
@@ -281,7 +285,9 @@ async function selectTake(take) {
     host.appendChild(b);
   });
   const length = take.finished ? `${take.seconds.toFixed(0)} s · ` : "Stopped early · ";
-  $("takeFacts").textContent = `${length}${mb(blob.size)} · ${take.sound}` + (take.saved ? " · sent to Photos" : "");
+  $("takeFacts").textContent = `${length}${mb(blob.size)} · ${take.sound}` + (take.confirmed ? " · checked in Photos" : take.saved ? " · sent, not checked yet" : "");
+  $("landedRow").hidden = !take.saved || !!take.confirmed;
+  $("doneNote").textContent = $("landedRow").hidden ? "" : "Open Photos and look. Is it there? If you AirDropped, check your Mac instead.";
   $("saveBtn").textContent = take.saved ? "Save this take to Photos again" : "Save this take to Photos now";
   $("notGoodBtn").hidden = !take.good;
   $("goodBtn").textContent = take.good ? "Good · back to the list" : "Good";
@@ -315,14 +321,22 @@ async function saveTake() {
     if (!navigator.canShare || !navigator.canShare({ files: [file] })) throw new Error("no share sheet here");
     await navigator.share({ files: [file] });
   } catch (e) {
-    if (e.name === "AbortError") return; // he closed the share sheet: not saved
+    if (e.name === "AbortError") return; // he closed the share sheet: nothing sent
     $("doneNote").textContent = "The share sheet did not open: " + e.message;
     return;
   }
   take.saved = true;
   try { await T.put(take); } catch (e) {}
   await selectTake(take);
-  $("doneNote").textContent = "Sent. Check it is in Photos.";
+}
+
+/* the share sheet closing does not prove the file landed, so he says whether it did */
+async function answerLanded(arrived) {
+  const take = S.selected;
+  if (arrived) take.confirmed = true; else take.saved = false;
+  try { await T.put(take); } catch (e) {}
+  await selectTake(take);
+  $("doneNote").textContent = arrived ? "" : "Not marked as saved. Try again.";
 }
 
 /* ---- wiring ---- */
@@ -335,6 +349,8 @@ $("recBtn").onclick = () => {
   } else { record(); }
 };
 $("saveBtn").onclick = saveTake;
+$("landedYes").onclick = () => answerLanded(true);
+$("landedNo").onclick = () => answerLanded(false);
 $("goodBtn").onclick = markGood;
 $("notGoodBtn").onclick = markNotGood;
 $("retakeBtn").onclick = () => { $("playback").removeAttribute("src"); S.rec = null; startCamera(); };

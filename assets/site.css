@@ -186,3 +186,15 @@ footer{background:var(--ink); color:var(--cream); padding:54px 0 40px;}
   .navlinks .hide{display:none;}
 }
 @media(max-width:560px){ .receipts,.tools,.tools.four{grid-template-columns:1fr;} }
+
+/* Home page: the two audience sections (2026-11-03) */
+.who{font-size:16px; color:var(--ink-soft); margin-bottom:12px;}
+.fourup{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:40px;}
+.fourup .tool b{font-size:19px;}
+.band .fourup .tool{background:var(--cream);}
+#places-to-stay .row .img picture,#small-businesses .row .img picture{height:100%;}
+.row .say{margin-top:14px;}
+.row .say + .finep{margin-top:18px;}
+section[id]{scroll-margin-top:72px;}
+@media(max-width:900px){ .fourup{grid-template-columns:1fr 1fr;} }
+@media(max-width:560px){ .fourup{grid-template-columns:1fr;} }

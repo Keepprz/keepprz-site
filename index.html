@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keepprz — Custom tools for businesses. Built by an owner, for owners.</title>
-<meta name="description" content="Websites, video, and automations — custom-built so your work takes less time and costs less. Built by an owner who runs his own businesses on them.">
+<meta name="description" content="Custom systems for independent places to stay and small businesses. Your customers get answers right away, and you get your day back.">
 <meta property="og:title" content="Keepprz — Custom tools for businesses">
 <meta property="og:description" content="I built tools to run my own businesses. Now I build them for yours.">
 <meta property="og:image" content="https://keepprz.com/images/work/work-snscabins.jpg">
@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css?v=2026-10-16b">
+<link rel="stylesheet" href="/assets/site.css?v=2026-11-03a">
 </head>
 <body>
 
@@ -20,9 +20,8 @@
   <div class="wrap nav">
     <a class="logo" href="/">Keep<span class="accent">prz</span></a>
     <nav class="navlinks">
-      <a class="hide" href="/websites/">Websites</a>
-      <a class="hide" href="/video/">Video</a>
-      <a class="hide" href="/automations/">Automations</a>
+      <a class="hide" href="#places-to-stay">Places to stay</a>
+      <a class="hide" href="#small-businesses">Small businesses</a>
       <a class="hide" href="/work/">Work</a>
       <a class="hide" href="/about/">About</a>
       <a class="btn" href="tel:+18083491077">Call Jason</a>
@@ -30,43 +29,13 @@
   </div>
 </header>
 
-<!-- WATCH FIRST — the explainer film (Jason 2026-09-26: "the first thing they see").
-     2026-10-16: to be REPLACED by the 30-second pitch (script /Users/jgd_mbp/Documents/STUDIO/md/keepprz/30-second-pitch/keepprz_30-second-pitch-script_v01.md).
-     Until that film is approved and rendered, the 90-second pitch stays here.
-     Master: /Users/jgd_mbp/Documents/STUDIO/videos/mp4/keepprz/90-second-pitch/keepprz_90-second-pitch-motion_v03.mp4
-     Plays with sound on click (browsers block autoplay with sound); subtitles are burned in. Speed buttons set playbackRate. -->
-<section class="watch-first">
-  <div class="wrap">
-    <div class="video-show">
-      <video id="pitch" controls preload="metadata" playsinline poster="/images/video/keepprz-pitch-poster.jpg">
-        <source src="/images/video/keepprz-pitch-v03.mp4" type="video/mp4">
-      </video>
-      <div class="speed" role="group" aria-label="Playback speed">
-        <span>Speed</span>
-        <button type="button" data-rate="1" class="on">1×</button>
-        <button type="button" data-rate="1.25">1.25×</button>
-        <button type="button" data-rate="1.5">1.5×</button>
-      </div>
-    </div>
-  </div>
-</section>
-<script>
-(function(){
-  var v=document.getElementById('pitch'), bs=document.querySelectorAll('.speed button');
-  for(var i=0;i<bs.length;i++){bs[i].addEventListener('click',function(){
-    v.playbackRate=parseFloat(this.getAttribute('data-rate'));
-    for(var j=0;j<bs.length;j++){bs[j].classList.toggle('on',bs[j]===this);}
-  });}
-})();
-</script>
-
 <!-- HERO -->
 <div class="wrap">
   <section class="hero">
     <div>
       <span class="pill">Custom tools for businesses</span>
       <h1>I built tools to run <span class="accent">my own</span> businesses. Now I build them for yours.</h1>
-      <p class="lead">Websites, video, and automations — <strong>custom-built</strong> so your work takes less time and costs less. Built by an owner, for owners.</p>
+      <p class="lead">I build <strong>custom systems</strong> for independent places to stay and small businesses. Your customers get answers right away, and you get your day back.</p>
       <div class="cta-row">
         <a class="btn" href="tel:+18083491077">Call Jason — (808) 349-1077</a>
         <a class="ghost" href="/work/">See the work</a>
@@ -86,38 +55,53 @@
   </section>
 </div>
 
-<!-- THREE DOORS -->
-<section class="band">
-  <div class="wrap center">
-    <h2>Three kinds of tools. One person who builds them.</h2>
-    <p class="section-lead">Every business is different, so nothing here comes off a shelf. I look at how you work, find the jobs eating your time and money, and build the tool that does them.</p>
+<!-- TWO AUDIENCES — the pitch, Jason 2026-11-03 -->
+<section class="band" id="places-to-stay">
+  <div class="wrap row">
+    <div class="img">
+      <picture>
+        <source srcset="/images/web/keepprz-client-coldstream-lake.webp" type="image/webp">
+        <img class="ph" src="/images/web/keepprz-client-coldstream-lake.jpg" alt="Coldstream Suites at sunset, looking out over the lake — a Keepprz client">
+      </picture>
+    </div>
+    <div class="txt">
+      <span class="eyebrow">For places to stay</span>
+      <p class="who">Boutique hotels, B&amp;Bs, RV parks and owner-run motels</p>
+      <h2>A guest shouldn't have to call to find out what a room costs.</h2>
+      <p class="finep">On a $200 night, Booking.com's cut is about $30. When a guest books with you directly, that $30 stays with you.</p>
+      <p class="say">I was an Airbnb Superhost with five units, and I still run a wedding venue. I've answered the messages at midnight.</p>
+    </div>
   </div>
   <div class="wrap">
-    <div class="doors">
-      <a class="door" href="/websites/">
-        <div class="dimg" style="background-image:url('/images/work/work-snscabins.jpg')"></div>
-        <div class="dbody">
-          <h3>Websites</h3>
-          <p>A website with one job: bring you customers. Built, launched, and looked after — domain, Google, everything.</p>
-          <span class="go">See websites →</span>
-        </div>
-      </a>
-      <a class="door" href="/video/">
-        <div class="dimg" style="background-image:url('/images/work/sns-welcome-poster.jpg')"></div>
-        <div class="dbody">
-          <h3>Video</h3>
-          <p>Real footage from your business — shot, cut, and posted on a schedule. Films, social clips, and 3D renders of what isn't built yet.</p>
-          <span class="go">See video →</span>
-        </div>
-      </a>
-      <a class="door" href="/automations/">
-        <div class="dimg" style="background-image:url('/images/web/keepprz-site-on-phone.jpg')"></div>
-        <div class="dbody">
-          <h3>Automations</h3>
-          <p>The jobs that eat your day — replies, follow-ups, bookings, invoices, posting — handled by tools built around how you already work.</p>
-          <span class="go">See automations →</span>
-        </div>
-      </a>
+    <div class="fourup">
+      <div class="tool"><b>Your own booking</b><p>Your rooms, RV sites, rates and a live calendar on your own website, kept in step with Airbnb and Booking.com.</p></div>
+      <div class="tool"><b>Answers on the page</b><p>Pets, check-in, hookups, directions and what's nearby, there when the guest is looking.</p></div>
+      <div class="tool"><b>Follow-up that happens on its own</b><p>A confirmation, a reminder before they arrive, directions, and a thank-you that asks for a review.</p></div>
+      <div class="tool"><b>One screen</b><p>Every booking, every guest and every dollar in one place.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="small-businesses">
+  <div class="wrap row">
+    <div class="txt">
+      <span class="eyebrow">For small businesses</span>
+      <p class="who">Owner-run shops, trades and services</p>
+      <h2>You do good work. People should be able to find you, and get what they need the first time they look.</h2>
+    </div>
+    <div class="img">
+      <picture>
+        <source srcset="/images/web/keepprz-client-sns-log-loading.webp" type="image/webp">
+        <img class="ph" src="/images/web/keepprz-client-sns-log-loading.jpg" alt="Logs being loaded onto a truck at Sticks &amp; Stones — a Keepprz client">
+      </picture>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="fourup">
+      <div class="tool"><b>Get found</b><p>A website built to bring you customers, your Google listing done right, and video of your real business, posted on a schedule.</p></div>
+      <div class="tool"><b>Answers right away</b><p>What you do, where you work, how it works and what it costs, before anyone has to call.</p></div>
+      <div class="tool"><b>Nobody falls through</b><p>Every inquiry gets a reply and a follow-up, so you don't have to remember who you owe a call.</p></div>
+      <div class="tool"><b>Everything connected</b><p>Your website, email, calendar and invoices work together, so you stop typing the same thing twice.</p></div>
     </div>
   </div>
 </section>
