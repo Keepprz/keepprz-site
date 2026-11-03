@@ -1,13 +1,13 @@
 {
   "name": "Talking heads, the land, November 2026",
-  "version": "1.0 · 2026-11-03",
+  "version": "1.1 · 2026-11-03",
   "sections": [
     {
       "name": "Sound test first",
       "setup": "Outside, where you will really shoot. Any spot.",
       "project": "capture",
       "shots": [
-        { "code": "00", "title": "Sound test", "body": "This is the sound test. I am standing outside on our land, holding the phone where I will hold it for the real ones. If there is wind, you will hear it now. One, two, three, four, five." }
+        {"code": "00", "title": "Sound test", "body": "This is the sound test. I am standing outside on our land, holding the phone where I will hold it for the real ones. If there is wind, you will hear it now. One, two, three, four, five."}
       ]
     },
     {
@@ -15,11 +15,10 @@
       "setup": "Spot 1. Standing, Mount Borah behind you.",
       "project": "borah_vista",
       "shots": [
-        { "code": "P1", "title": "Every Sunday", "body": "There's a new episode of The Borah Vista Podcast every Sunday. Stories from the mountains of central Idaho. Look for it on Apple or Spotify." },
-        { "code": "P2", "title": "Who's talking", "body": "I'm Jason. I live four miles from the bottom of Mount Borah. One thing you should know about the podcast: the voice on it is an AI copy of my own voice. This one's really me." },
-        { "code": "P3", "title": "Custer", "body": "About eight o'clock on a February night in 1890, the steam whistle at the Custer mill started to blow. People in town knew what it meant, and they took their shovels. That's the first episode. Custer Ghost Town." },
-        { "code": "P4", "title": "Borah, the morning it broke", "body": "October 28th, 1983. Two men were driving up a dirt road at about five miles an hour, and right in front of them, the ground broke. That's where the Mount Borah episode starts." },
-        { "code": "P5", "title": "Borah, the name", "body": "That's Mount Borah behind me. A senator got the name. But the first name I can find the government writing down for this mountain is Beauty. Whoever wrote that had it right." }
+        {"code": "P1", "title": "Every Sunday", "body": "There's a new episode of The Borah Vista Podcast every Sunday. Stories from the mountains of central Idaho. Look for it on Apple or Spotify."},
+        {"code": "P2", "title": "Who's talking", "body": "I'm Jason. I live four miles from the bottom of Mount Borah. One thing you should know about the podcast: the voice on it is an AI copy of my own voice. This one's really me."},
+        {"code": "P3", "title": "Custer", "body": "About eight o'clock on a February night in 1890, the steam whistle at the Custer mill started to blow. People in town knew what it meant, and they took their shovels. That's the first episode. Custer Ghost Town."},
+        {"code": "P4", "title": "Borah, the morning it broke", "body": "October 28th, 1983. Two men were driving up a dirt road at about five miles an hour, and right in front of them, the ground broke. That's where the Mount Borah episode starts."}
       ]
     },
     {
@@ -27,22 +26,22 @@
       "setup": "Spot 2. Standing, the range behind you. Different spot from the podcast.",
       "project": "borah_vista",
       "shots": [
-        { "code": "G08a", "title": "Challis Hot Springs, open", "body": "An hour north of Mackay, there are two hot pools on a bench above the Salmon River. And they're the opposite of Sunbeam." },
-        { "code": "G08b", "title": "Challis Hot Springs, close", "body": "Some nights you want wild. Some nights you want the lawn. The river runs past both." },
-        { "code": "G09a", "title": "Spar Canyon, open", "body": "There's a dirt road south of Challis where you can drive for an hour without meeting another vehicle. What you might meet is wild horses. And they're not going to move." },
-        { "code": "G09b", "title": "Spar Canyon, close", "body": "Call the BLM before you commit. Take more water and fuel than the distance says. And download your maps in Challis, because there's no signal out there at all." },
-        { "code": "G10a", "title": "Morgan Creek, open", "body": "Almost everybody gets this one backwards. The ram with the big curl is the one on the postcard. He is not most of what's standing on that hill." },
-        { "code": "G10b", "title": "Morgan Creek, close", "body": "Look up, not out. Stay in the car. Engine off. Windows down. Don't get out." },
-        { "code": "G11a", "title": "The Dredge, open", "body": "The drive to this place is the best buildup in Idaho. Eight and a half miles of gravel, and mile after mile, one question keeps building. What could possibly do this?" },
-        { "code": "G11b", "title": "The Dredge, close", "body": "It stopped, and nobody moved it. And every ounce of gold it ever found would fit in a single two-foot cube." },
-        { "code": "G12a", "title": "Custer, open", "body": "Two miles above the dredge, at the end of the good gravel, is a town that had six hundred people in it and now has none." },
-        { "code": "G12b", "title": "Custer, close", "body": "It's free, it's open all the time, and you can walk through it at any hour of any day. The buildings are staffed in summer. The ground never closes." },
-        { "code": "G13a", "title": "King Mountain, open", "body": "There is a town in Idaho with a signed federal agreement to send people up through the sky that belongs to the airliners. Hanging from aluminum tubes. No engine. Moore, Idaho. Population one hundred and sixty-two." },
-        { "code": "G13b", "title": "King Mountain, close", "body": "Don't drive to launch. Go to the landing zone. It's at road level, and it's where they all come back to. Tailgate, chairs, done." },
-        { "code": "G14a", "title": "Mackay to Challis, open", "body": "The river in our valley never reaches the sea. It runs out of the mountains, crosses the desert, and sinks into the ground." },
-        { "code": "G14b", "title": "Mackay to Challis, close", "body": "It's fifty minutes from Mackay to Challis. Paved the whole way, and the range is on your right for most of it. Everything good up there starts with this drive." },
-        { "code": "G15a", "title": "Arco, open", "body": "There's the sail of a nuclear submarine in the Idaho desert, eight hundred miles from the sea. It's in Arco, twenty-six miles south of Mackay, straight down 93." },
-        { "code": "G15b", "title": "Arco, close", "body": "EBR-1 is eighteen miles east of Arco. Craters of the Moon is eighteen miles west. They are not the same trip. Pick one. Then come back for the other." }
+        {"code": "G08a", "title": "Challis Hot Springs, open", "body": "An hour north of Mackay, there are two hot pools on a bench above the Salmon River. And they're the opposite of Sunbeam."},
+        {"code": "G08b", "title": "Challis Hot Springs, close", "body": "Some nights you want wild. Some nights you want the lawn. The river runs past both."},
+        {"code": "G09a", "title": "Spar Canyon, open", "body": "There's a dirt road south of Challis where you can drive for an hour without meeting another vehicle. What you might meet is wild horses. And they're not going to move."},
+        {"code": "G09b", "title": "Spar Canyon, close", "body": "Call the BLM before you commit. Take more water and fuel than the distance says. And download your maps in Challis, because there's no signal out there at all."},
+        {"code": "G10a", "title": "Morgan Creek, open", "body": "Almost everybody gets this one backwards. The ram with the big curl is the one on the postcard. He is not most of what's standing on that hill."},
+        {"code": "G10b", "title": "Morgan Creek, close", "body": "Look up, not out. Stay in the car. Engine off. Windows down. Don't get out."},
+        {"code": "G11a", "title": "The Dredge, open", "body": "The drive to this place is the best buildup in Idaho. Eight and a half miles of gravel, and mile after mile, one question keeps building. What could possibly do this?"},
+        {"code": "G11b", "title": "The Dredge, close", "body": "It stopped, and nobody moved it. And every ounce of gold it ever found would fit in a single two-foot cube."},
+        {"code": "G12a", "title": "Custer, open", "body": "Two miles above the dredge, at the end of the good gravel, is a town that had six hundred people in it and now has none."},
+        {"code": "G12b", "title": "Custer, close", "body": "It's free, it's open all the time, and you can walk through it at any hour of any day. The buildings are staffed in summer. The ground never closes."},
+        {"code": "G13a", "title": "King Mountain, open", "body": "There is a town in Idaho with a signed federal agreement to send people up through the sky that belongs to the airliners. Hanging from aluminum tubes. No engine. Moore, Idaho. Population one hundred and sixty-two."},
+        {"code": "G13b", "title": "King Mountain, close", "body": "Don't drive to launch. Go to the landing zone. It's at road level, and it's where they all come back to. Tailgate, chairs, done."},
+        {"code": "G14a", "title": "Mackay to Challis, open", "body": "The river in our valley never reaches the sea. It runs out of the mountains, crosses the desert, and sinks into the ground."},
+        {"code": "G14b", "title": "Mackay to Challis, close", "body": "It's fifty minutes from Mackay to Challis. Paved the whole way, and the range is on your right for most of it. Everything good up there starts with this drive."},
+        {"code": "G15a", "title": "Arco, open", "body": "There's the sail of a nuclear submarine in the Idaho desert, eight hundred miles from the sea. It's in Arco, twenty-six miles south of Mackay, straight down 93."},
+        {"code": "G15b", "title": "Arco, close", "body": "EBR-1 is eighteen miles east of Arco. Craters of the Moon is eighteen miles west. They are not the same trip. Pick one. Then come back for the other."}
       ]
     },
     {
@@ -50,15 +49,15 @@
       "setup": "Spot 3. Standing, wide valley or range behind you. Change your top layer.",
       "project": "borah_vista",
       "shots": [
-        { "code": "S20", "title": "White Knob", "body": "Three thousand feet above Mackay there's a town you can drive to, and nobody lives there. White Knob." },
-        { "code": "S21", "title": "EBR-1", "body": "The atomic age has a birthplace. It's a little brick building in the Idaho desert, about forty minutes from our valley." },
-        { "code": "S22", "title": "Mackay Dam", "body": "A few miles up the valley from Mackay, a wall of earth has been holding back a lake for over a century." },
-        { "code": "S23", "title": "Bighorns", "body": "The mountain range above our valley is named for a river. Honestly, it should have been named for the sheep." },
-        { "code": "S24", "title": "Number Hill", "body": "Every town keeps a class photo. Arco's is painted on a mountain." },
-        { "code": "S25", "title": "The submarine", "body": "Idaho is about as far from the ocean as America gets. So explain the submarine." },
-        { "code": "S26", "title": "Pass Creek", "body": "The Lost River Range is a sixty-mile wall of stone. And the wall has exactly one crack in it." },
-        { "code": "S27", "title": "Doublespring Pass", "body": "Idaho's tallest mountain range has exactly one road over the top." },
-        { "code": "S28", "title": "Pronghorn", "body": "Most people think you have to go to Africa to see antelope. Then they drive our valley." }
+        {"code": "S20", "title": "White Knob", "body": "Three thousand feet above Mackay there's a town you can drive to, and nobody lives there. White Knob."},
+        {"code": "S21", "title": "EBR-1", "body": "The atomic age has a birthplace. It's a little brick building in the Idaho desert, about forty minutes from our valley."},
+        {"code": "S22", "title": "Mackay Dam", "body": "A few miles up the valley from Mackay, a wall of earth has been holding back a lake for over a century."},
+        {"code": "S23", "title": "Bighorns", "body": "The mountain range above our valley is named for a river. Honestly, it should have been named for the sheep."},
+        {"code": "S24", "title": "Number Hill", "body": "Every town keeps a class photo. Arco's is painted on a mountain."},
+        {"code": "S25", "title": "The submarine", "body": "Idaho is about as far from the ocean as America gets. So explain the submarine."},
+        {"code": "S26", "title": "Pass Creek", "body": "The Lost River Range is a sixty-mile wall of stone. And the wall has exactly one crack in it."},
+        {"code": "S27", "title": "Doublespring Pass", "body": "Idaho's tallest mountain range has exactly one road over the top."},
+        {"code": "S28", "title": "Pronghorn", "body": "Most people think you have to go to Africa to see antelope. Then they drive our valley."}
       ]
     },
     {
@@ -66,15 +65,15 @@
       "setup": "Walking, mountains behind you. Stand still 3 seconds, walk straight, stand still 3 seconds. No turns.",
       "project": "borah_vista",
       "shots": [
-        { "code": "L1", "title": "Where we are", "body": "This is our place. About sixty-two hundred feet, four miles from the bottom of Mount Borah, the highest mountain in Idaho." },
-        { "code": "L2", "title": "It goes white", "body": "It'll be raining right here. Then the clouds clear, and all you see is white. Everything above seven or eight thousand feet just goes white. It's a different season up there, right over your head." },
-        { "code": "L3", "title": "Why here (your own words)", "body": "YOUR OWN WORDS, about 30 seconds.\n\nWhy this valley? What made you stop here, and what keeps you looking up at it?" },
-        { "code": "L4", "title": "November (your own words)", "body": "YOUR OWN WORDS, about 20 seconds.\n\nWhat it's like here right now. The light, the cold, the snow on the range, how quiet it gets. Say what you can actually see from where you're standing." },
-        { "code": "L5", "title": "How to get there", "body": "People always ask me the same thing. How do you actually get there? So that's what we make. The road, the turn, what to know before you go." },
-        { "code": "L6", "title": "Nobody tells you", "body": "Here's the part nobody tells you." },
-        { "code": "L7", "title": "Most people miss it", "body": "Most people driving through this valley never find out about this." },
-        { "code": "L8", "title": "Come see it", "body": "Come see it. Everything you need is at borahvista.com." },
-        { "code": "L9", "title": "YouTube sign-off", "body": "Every one of these films asks one question. Is it worth the stop? Next time, we'll go find out about another one. I'm Jason. This is Borah Vista." }
+        {"code": "L1", "title": "Where we are", "body": "This is our place. About sixty-two hundred feet, four miles from the bottom of Mount Borah, the highest mountain in Idaho."},
+        {"code": "L2", "title": "It goes white", "body": "It'll be raining right here. Then the clouds clear, and all you see is white. Everything above seven or eight thousand feet just goes white. It's a different season up there, right over your head."},
+        {"code": "L3", "title": "Why here (your own words)", "body": "YOUR OWN WORDS, about 30 seconds.\n\nWhy this valley? What made you stop here, and what keeps you looking up at it?"},
+        {"code": "L4", "title": "November (your own words)", "body": "YOUR OWN WORDS, about 20 seconds.\n\nWhat it's like here right now. The light, the cold, the snow on the range, how quiet it gets. Say what you can actually see from where you're standing."},
+        {"code": "L5", "title": "How to get there", "body": "People always ask me the same thing. How do you actually get there? So that's what we make. The road, the turn, what to know before you go."},
+        {"code": "L6", "title": "Nobody tells you", "body": "Here's the part nobody tells you."},
+        {"code": "L7", "title": "Most people miss it", "body": "Most people driving through this valley never find out about this."},
+        {"code": "L8", "title": "Come see it", "body": "Come see it. Everything you need is at borahvista.com."},
+        {"code": "L9", "title": "YouTube sign-off", "body": "Every one of these films asks one question. Is it worth the stop? Next time, we'll go find out about another one. I'm Jason. This is Borah Vista."}
       ]
     },
     {
@@ -82,24 +81,21 @@
       "setup": "Spot 4. Standing, range behind you. Hold a printed guide if you have one on you.",
       "project": "borah_vista",
       "shots": [
-        { "code": "B1", "title": "What the guide is", "body": "This is the Borah Vista guide. The drives, the hot springs, the ghost towns, how to actually get to them, and what to know before you go. It's at borahvista.com." },
-        { "code": "B2", "title": "In your room", "body": "If this guide is in your room, you're already in the right place. Pick one page, and go." },
-        { "code": "B3", "title": "To lodge owners, the ask", "body": "I run Borah Vista. It's the visitor site for the Lost River Range. People plan their trip there, and the first thing they ask is where to stay. I want to send those people to you." },
-        { "code": "B4", "title": "To lodge owners, the deal", "body": "It costs nothing to join and nothing a month. The guest pays on the site, it lands in your account, and I take my ten percent on the way through. If I send you nothing, you pay nothing." },
-        { "code": "B5", "title": "To local businesses", "body": "Visitors read this guide in the rooms where they're staying, while they're deciding what to do tomorrow. If you run a business out here, that's when you want them to find you." }
-      ]
-    },
-    {
-      "name": "Keepprz",
-      "setup": "Spot 5. Standing, plainer background. Change your top layer.",
-      "project": "keepprz",
-      "shots": [
-        { "code": "K1", "title": "30-second pitch (draft words)", "body": "Every business has the jobs that eat the day. Answering the same questions. Chasing invoices. Following up. Posting.\n\nI've run rentals, a wedding venue, and a film studio, so I built tools to do those jobs for me. Now they mostly run themselves.\n\nThat's what I build for you. Websites, video, and automations, custom-built for your business, so the work takes less time and costs less.\n\nKeepprz. Built by an owner, for owners." },
-        { "code": "K2", "title": "Who I am", "body": "I'm Jason. I've run rentals, a wedding venue, and a film studio. I built tools to run my own businesses. Now I build them for yours." },
-        { "code": "K3", "title": "What I do", "body": "I work with a lot of different businesses. And really, what I do is build tools. Custom tools, so you can get your jobs done in less time and for less money." },
-        { "code": "K4", "title": "The jobs", "body": "Every business has the jobs that eat the day. Answering the same questions. Chasing invoices. Following up. Posting." },
-        { "code": "K5", "title": "Tag line", "body": "Keepprz. Built by an owner, for owners." }
+        {"code": "B1", "title": "What the guide is", "body": "This is the Borah Vista guide. The drives, the hot springs, the ghost towns, how to actually get to them, and what to know before you go. It's at borahvista.com."},
+        {"code": "B2", "title": "In your room", "body": "If this guide is in your room, you're already in the right place. Pick one page, and go."},
+        {"code": "B3", "title": "To lodge owners, the ask", "body": "I run Borah Vista. It's the visitor site for the Lost River Range. People plan their trip there, and the first thing they ask is where to stay. I want to send those people to you."},
+        {"code": "B4", "title": "To lodge owners, the deal", "body": "It costs nothing to join and nothing a month. The guest pays on the site, it lands in your account, and I take my ten percent on the way through. If I send you nothing, you pay nothing."}
       ]
     }
+  ],
+  "not_shot_note": "Jason, 2026-11-03: \"I am not gonna record the other ones.\" Off the list; the words are kept here.",
+  "not_shot": [
+    {"section": "Podcast", "project": "borah_vista", "code": "P5", "title": "Borah, the name", "body": "That's Mount Borah behind me. A senator got the name. But the first name I can find the government writing down for this mountain is Beauty. Whoever wrote that had it right."},
+    {"section": "Guide and lodges", "project": "borah_vista", "code": "B5", "title": "To local businesses", "body": "Visitors read this guide in the rooms where they're staying, while they're deciding what to do tomorrow. If you run a business out here, that's when you want them to find you."},
+    {"section": "Keepprz", "project": "keepprz", "code": "K1", "title": "30-second pitch (draft words)", "body": "Every business has the jobs that eat the day. Answering the same questions. Chasing invoices. Following up. Posting.\n\nI've run rentals, a wedding venue, and a film studio, so I built tools to do those jobs for me. Now they mostly run themselves.\n\nThat's what I build for you. Websites, video, and automations, custom-built for your business, so the work takes less time and costs less.\n\nKeepprz. Built by an owner, for owners."},
+    {"section": "Keepprz", "project": "keepprz", "code": "K2", "title": "Who I am", "body": "I'm Jason. I've run rentals, a wedding venue, and a film studio. I built tools to run my own businesses. Now I build them for yours."},
+    {"section": "Keepprz", "project": "keepprz", "code": "K3", "title": "What I do", "body": "I work with a lot of different businesses. And really, what I do is build tools. Custom tools, so you can get your jobs done in less time and for less money."},
+    {"section": "Keepprz", "project": "keepprz", "code": "K4", "title": "The jobs", "body": "Every business has the jobs that eat the day. Answering the same questions. Chasing invoices. Following up. Posting."},
+    {"section": "Keepprz", "project": "keepprz", "code": "K5", "title": "Tag line", "body": "Keepprz. Built by an owner, for owners."}
   ]
 }
