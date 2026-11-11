@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <!-- capture_camera-test_v01 · 2026-11-03 · Front-camera limits test for the talking-head app.
-     Nothing leaves the phone: takes stay in this browser until Jason sends them himself. -->
+     Nothing leaves the phone: takes stay in this browser until Jason sends them himself.
+     Build 2026-11-11 · BACK-CAMERA MODE added (for 360 photos on the gimbal): lists every back lens and what each
+     allows, tries exposure / white balance / focus lock, logs picture brightness, reads the motion sensors, grabs a
+     full-size still, and sends the report without needing a recording. The front test is unchanged. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
@@ -52,14 +55,18 @@
   ul.takes { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
   ul.takes button { width: 100%; text-align: left; font-weight: 500; font-size: 14px; border-color: var(--line); }
   .warn { color: var(--warn); } .good { color: var(--good); }
+  body.back .script { display: none; }
+  body.back #preview { transform: none; max-height: 40vh; }
 </style>
 </head>
 <body>
 
 <section id="startView">
-  <h1>Front camera test</h1>
-  <p>Turn your phone brightness all the way up, then tap start. Allow the camera and the microphone when Safari asks.</p>
-  <button class="primary" id="startBtn">Start the test</button>
+  <h1>Camera test</h1>
+  <p>Front camera: turn your phone brightness all the way up, then tap start. Allow the camera and the microphone when Safari asks.</p>
+  <button class="primary" id="startBtn">Start the front camera test</button>
+  <button id="backBtn">Back camera test (for 360 photos)</button>
+  <p class="muted">The back camera test also asks for Motion. Allow it: it is how the page tells when the phone has stopped turning.</p>
   <p id="error" hidden></p>
   <p class="muted">Nothing uploads. Takes stay on this phone until you send them.</p>
   <div id="savedWrap" hidden>
@@ -77,6 +84,13 @@
     <div class="row"><span class="rowlabel">Size</span><span class="row" id="sizeChips"></span></div>
     <div class="row" style="margin-top:6px"><span class="rowlabel">Quality</span><span class="row" id="rateChips"></span></div>
     <div class="row" style="margin-top:6px"><span class="rowlabel">Sound</span><span class="row" id="soundChips"></span></div>
+    <div class="row" style="margin-top:6px" id="lensRow" hidden><span class="rowlabel">Lens</span><span class="row" id="lensChips"></span></div>
+    <div id="lockRows"></div>
+  </div>
+  <div class="actions" id="backActions" hidden>
+    <button id="stillBtn">Take a still</button>
+    <button id="sendStillBtn" disabled>Send still</button>
+    <button class="wide" id="sendReportNowBtn">Send report (no recording needed)</button>
   </div>
   <button id="recBtn" disabled>Record</button>
 </section>
@@ -124,7 +138,15 @@ const S = {
   stream: null, video: null, audio: null, rec: null, wake: null, wakeResult: "not tried",
   rung: null, rate: 25, sound: SOUNDS[0], probe: [], capabilities: {}, audioInputs: [], mimeSupport: {},
   storage: {}, take: null, current: null, stopping: false,
+  facing: "user", lens: null, lenses: [], cameras: [], videoInputs: [], locks: {}, lockSurvey: {}, lockLog: [],
+  motion: { permission: "not asked", events: 0, rate: null, orient: null, intervalMs: null }, luma: [], stills: [], still: null, liveTimer: null,
 };
+const BUILD = "2026-11-11 back-camera";
+const LOCKS = [
+  { key: "exposureMode", name: "Exposure" },
+  { key: "whiteBalanceMode", name: "White bal" },
+  { key: "focusMode", name: "Focus" },
+];
 
 /* ---- saved takes: every chunk goes to IndexedDB as it records, so a crash keeps what was shot ---- */
 let dbPromise = null;
@@ -188,7 +210,7 @@ function fail(message) { $("error").textContent = message; $("error").hidden = f
 
 function explain(e) {
   if (e.name === "NotAllowedError") return "The camera or microphone is blocked. In Settings, open Safari, set Camera and Microphone to Allow, then reload this page.";
-  if (e.name === "NotFoundError") return "This device did not offer a front camera and a microphone.";
+  if (e.name === "NotFoundError") return "This device did not offer that camera and a microphone.";
   if (e.name === "NotReadableError") return "Another app is using the camera. Close it, then reload this page.";
   return "The camera did not start: " + e.name + ". " + e.message;
 }
@@ -201,15 +223,198 @@ async function askWake() {
   } catch (e) { S.wakeResult = "refused: " + e.name; }
 }
 
+/* One place builds what the camera is asked for: the size AND any locks, because each applyConstraints call
+   replaces the one before it (asking for a lock alone would drop the size). */
+function sizeAsk(rung) {
+  return { ...(S.facing === "user" ? { facingMode: "user" } : {}), width: { ideal: rung.w }, height: { ideal: rung.h }, frameRate: { ideal: rung.fps } };
+}
 async function applyRung(rung) {
-  await S.video.applyConstraints({ facingMode: "user", width: { ideal: rung.w }, height: { ideal: rung.h }, frameRate: { ideal: rung.fps } });
+  const locks = Object.keys(S.locks).length ? { advanced: [{ ...S.locks }] } : {};
+  await S.video.applyConstraints({ ...sizeAsk(rung), ...locks });
   await sleep(450);
 }
 
 function liveLine() {
+  if (!S.video) return;
   const s = S.video.getSettings();
   const v = $("preview");
-  $("live").textContent = `Camera is giving ${v.videoWidth} × ${v.videoHeight} at ${Math.round(s.frameRate || 0)} fps`;
+  let line = `Camera is giving ${v.videoWidth} × ${v.videoHeight} at ${Math.round(s.frameRate || 0)} fps`;
+  if (S.facing === "environment") {
+    const last = S.luma[S.luma.length - 1];
+    if (last && last.luma != null) line += ` · brightness ${last.luma}`;
+    if (S.motion.rate == null) line += " · no motion sensor";
+    else line += S.motion.rate < 1.5 ? " · phone is still" : ` · turning ${Math.round(S.motion.rate)}°/s`;
+  }
+  $("live").textContent = line;
+}
+
+/* ---- back camera: lenses, locks, motion, brightness, stills ---- */
+function videoAsk() {
+  if (S.facing === "user") return { facingMode: "user" };
+  return S.lens ? { deviceId: { exact: S.lens.id } } : { facingMode: { ideal: "environment" } };
+}
+
+async function openStream() {
+  if (S.stream) S.stream.getTracks().forEach((t) => t.stop());
+  S.stream = await navigator.mediaDevices.getUserMedia({
+    video: { ...videoAsk(), width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
+    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+  });
+  S.video = S.stream.getVideoTracks()[0];
+  S.audio = S.stream.getAudioTracks()[0];
+  [S.video, S.audio].forEach((tr) => {
+    ["mute", "unmute", "ended"].forEach((ev) => tr.addEventListener(ev, () => logEvent(`${tr.kind} ${ev}`)));
+  });
+  const v = $("preview");
+  v.srcObject = S.stream;
+  try { await v.play(); } catch (e) { logEvent("preview play refused: " + e.name); }
+  S.capabilities = S.video.getCapabilities ? S.video.getCapabilities() : { note: "getCapabilities not available" };
+}
+
+/* Must be the first thing the tap does: iPhone only shows the Motion question straight from a tap. */
+async function askMotion() {
+  try {
+    if (typeof DeviceMotionEvent === "undefined") { S.motion.permission = "not available"; return; }
+    S.motion.permission = DeviceMotionEvent.requestPermission ? await DeviceMotionEvent.requestPermission() : "no question needed";
+  } catch (e) { S.motion.permission = "refused: " + e.name; }
+  if (S.motion.listening) return;
+  S.motion.listening = true;
+  window.addEventListener("devicemotion", (e) => {
+    const r = e.rotationRate || {};
+    if (r.alpha == null && r.beta == null && r.gamma == null) return;
+    S.motion.rate = Math.hypot(r.alpha || 0, r.beta || 0, r.gamma || 0);
+    S.motion.events++;
+    S.motion.intervalMs = e.interval;
+  });
+  window.addEventListener("deviceorientation", (e) => {
+    S.motion.orient = { alpha: e.alpha, beta: e.beta, gamma: e.gamma, compass: e.webkitCompassHeading, compassAccuracy: e.webkitCompassAccuracy };
+  });
+}
+
+/* Open every back lens once and write down what it allows. iPhone gives a page one camera at a time. */
+async function surveyBackCameras() {
+  let devices = [];
+  try { devices = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "videoinput"); }
+  catch (e) { S.videoInputs = ["could not list: " + e.name]; return; }
+  S.videoInputs = devices.map((d) => d.label || "unnamed");
+  S.cameras = [];
+  for (const d of devices.filter((x) => !/front/i.test(x.label))) {
+    const row = { label: d.label || "unnamed", id: d.deviceId };
+    try {
+      if (S.stream) S.stream.getTracks().forEach((t) => t.stop());
+      S.stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: d.deviceId }, width: { ideal: 3840 }, height: { ideal: 2160 }, frameRate: { ideal: 30 } } });
+      const tr = S.stream.getVideoTracks()[0];
+      $("preview").srcObject = S.stream;
+      await sleep(400);
+      row.capabilities = tr.getCapabilities ? tr.getCapabilities() : null;
+      row.settings = tr.getSettings();
+    } catch (e) { row.error = e.name + (e.message ? ": " + e.message : ""); }
+    S.cameras.push(row);
+  }
+  S.lenses = S.cameras.filter((c) => !c.error);
+  S.lens = S.lenses.find((c) => /ultra/i.test(c.label)) || S.lenses.find((c) => /back camera$/i.test(c.label)) || S.lenses[0] || null;
+}
+
+const lockOptions = (key) => (S.capabilities && Array.isArray(S.capabilities[key]) ? S.capabilities[key] : []);
+
+/* Ask for each lock whether or not the camera lists it, and write down what the camera says it is doing after.
+   An "accepted" with the setting unchanged means the request was quietly ignored. */
+async function surveyLocks() {
+  const out = [];
+  for (const { key } of LOCKS) {
+    for (const value of ["manual", "continuous"]) {
+      const row = { key, offered: lockOptions(key), asked: value };
+      try { await S.video.applyConstraints({ ...sizeAsk(S.rung), advanced: [{ [key]: value }] }); row.result = "accepted"; }
+      catch (e) { row.result = "refused: " + e.name; }
+      await sleep(200);
+      row.after = S.video.getSettings()[key];
+      out.push(row);
+    }
+  }
+  S.lockSurvey[S.lens ? S.lens.label : "default back camera"] = out;
+  S.locks = {};
+  try { await applyRung(S.rung); } catch (e) {}
+}
+
+async function setLock(key, value) {
+  S.locks[key] = value;
+  const row = { at: new Date().toISOString(), key, asked: value };
+  try { await applyRung(S.rung); row.result = "accepted"; } catch (e) { row.result = "refused: " + e.name; }
+  row.after = S.video.getSettings()[key];
+  S.lockLog.push(row);
+}
+
+function renderLocks() {
+  const host = $("lockRows");
+  host.textContent = "";
+  if (S.facing !== "environment") return;
+  let any = false;
+  LOCKS.forEach(({ key, name }) => {
+    const options = lockOptions(key);
+    if (options.length < 2) return;
+    any = true;
+    const row = document.createElement("div");
+    row.className = "row";
+    row.style.marginTop = "6px";
+    const label = document.createElement("span");
+    label.className = "rowlabel";
+    label.textContent = name;
+    const inner = document.createElement("span");
+    inner.className = "row";
+    row.append(label, inner);
+    host.appendChild(row);
+    const now = S.video.getSettings()[key];
+    chips(inner, options, (o) => (o === "continuous" ? "Auto" : o === "manual" ? "Locked" : o), (o) => o === now, async (o) => { await setLock(key, o); });
+  });
+  if (!any) {
+    const p = document.createElement("p");
+    p.className = "muted";
+    p.style.marginTop = "6px";
+    p.textContent = "This lens offers a page no exposure, white balance or focus lock.";
+    host.appendChild(p);
+  }
+}
+
+function startLive() {
+  if (S.liveTimer) clearInterval(S.liveTimer);
+  const c = document.createElement("canvas");
+  c.width = 64; c.height = 36;
+  const g = c.getContext("2d", { willReadFrequently: true });
+  S.liveTimer = setInterval(() => {
+    const v = $("preview");
+    if (!S.video || !v.videoWidth) return;
+    let luma = null;
+    try {
+      g.drawImage(v, 0, 0, 64, 36);
+      const d = g.getImageData(0, 0, 64, 36).data;
+      let sum = 0;
+      for (let i = 0; i < d.length; i += 4) sum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+      luma = Math.round(sum / (d.length / 4));
+    } catch (e) {}
+    const st = S.video.getSettings();
+    S.luma.push({ t: Number((performance.now() / 1000).toFixed(1)), luma, exposureMode: st.exposureMode, whiteBalanceMode: st.whiteBalanceMode, focusMode: st.focusMode,
+                  turning: S.motion.rate == null ? null : Number(S.motion.rate.toFixed(1)) });
+    if (S.luma.length > 480) S.luma.shift();
+    if (!(S.rec && S.rec.state === "recording")) liveLine();
+  }, 500);
+}
+
+async function grabStill() {
+  const v = $("preview");
+  if (!v.videoWidth) return;
+  const t0 = performance.now();
+  const c = document.createElement("canvas");
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  c.getContext("2d").drawImage(v, 0, 0);
+  const blob = await new Promise((r) => c.toBlob(r, "image/jpeg", 0.95));
+  const when = new Date();
+  const info = { when: when.toISOString(), size: `${c.width}x${c.height}`, bytes: blob ? blob.size : 0, ms: Math.round(performance.now() - t0),
+                 lens: S.lens ? S.lens.label : "default", facing: S.motion.orient, turning: S.motion.rate, settings: S.video.getSettings() };
+  S.stills.push(info);
+  if (!blob) { $("sendStillBtn").textContent = "Still failed"; return; }
+  S.still = { blob, name: `capture_camera-test_${stamp(when)}_still_${c.width}x${c.height}.jpg` };
+  $("sendStillBtn").disabled = false;
+  $("sendStillBtn").textContent = `Send still (${c.width}×${c.height}, ${mb(blob.size)})`;
 }
 
 async function probeCamera() {
@@ -246,6 +451,23 @@ function renderChips() {
   chips($("sizeChips"), delivered, (r) => r.id, (r) => r === S.rung, async (r) => { S.rung = r; await applyRung(r); });
   chips($("rateChips"), RATES, (r) => r + " Mbps", (r) => r === S.rate, async (r) => { S.rate = r; });
   chips($("soundChips"), SOUNDS, (s) => s.id, (s) => s === S.sound, async (s) => { S.sound = s; await applySound(); });
+  const back = S.facing === "environment";
+  $("lensRow").hidden = !(back && S.lenses.length > 1);
+  if (back) chips($("lensChips"), S.lenses, (l) => l.label.replace(/ camera$/i, ""), (l) => l === S.lens, async (l) => { await pickLens(l); });
+  renderLocks();
+}
+
+async function pickLens(lens) {
+  $("recBtn").disabled = true;
+  $("live").textContent = "Switching lens…";
+  S.lens = lens;
+  S.locks = {};
+  try { await openStream(); } catch (e) { return fail(explain(e)); }
+  await probeCamera();
+  S.rung = RUNGS.find((r) => r.fps === 30 && S.probe.find((p) => p.asked === r.id && p.delivered)) || RUNGS[2];
+  await applyRung(S.rung);
+  await surveyLocks();
+  $("recBtn").disabled = false;
 }
 
 async function applySound() {
@@ -254,29 +476,27 @@ async function applySound() {
   catch (e) { S.soundError = e.name; }
 }
 
-async function startCamera() {
+async function startCamera(facing) {
+  if (facing) S.facing = facing;
+  const back = S.facing === "environment";
+  document.body.classList.toggle("back", back);
+  $("backActions").hidden = !back;
   $("error").hidden = true;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return fail("This browser cannot reach the camera from a page. Open this link in Safari.");
   if (typeof MediaRecorder === "undefined") return fail("This browser cannot record from a page.");
+  if (back) await askMotion();
   try {
-    S.stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } },
-      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
-    });
+    await openStream();
+    show("recView");
+    if (back && !S.cameras.length) {
+      $("live").textContent = "Looking at each back lens…";
+      await surveyBackCameras();
+      await openStream();
+    }
   } catch (e) { return fail(explain(e)); }
-
-  S.video = S.stream.getVideoTracks()[0];
-  S.audio = S.stream.getAudioTracks()[0];
-  [S.video, S.audio].forEach((tr) => {
-    ["mute", "unmute", "ended"].forEach((ev) => tr.addEventListener(ev, () => logEvent(`${tr.kind} ${ev}`)));
-  });
   show("recView");
-  const v = $("preview");
-  v.srcObject = S.stream;
-  try { await v.play(); } catch (e) { logEvent("preview play refused: " + e.name); }
   askWake();
 
-  S.capabilities = S.video.getCapabilities ? S.video.getCapabilities() : { note: "getCapabilities not available" };
   S.mimeSupport = Object.fromEntries(MIME_CANDIDATES.map((m) => [m, MediaRecorder.isTypeSupported(m)]));
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
@@ -288,10 +508,12 @@ async function startCamera() {
     S.storage.persisted = navigator.storage.persist ? await navigator.storage.persist() : "not available";
   } catch (e) { S.storage = { error: e.name }; }
 
+  $("live").textContent = "Checking what this camera can do…";
   await probeCamera();
   const best = RUNGS.find((r) => r.fps === 30 && S.probe.find((p) => p.asked === r.id && p.delivered)) || RUNGS[2];
   S.rung = best;
   await applyRung(best);
+  if (back) { await surveyLocks(); startLive(); }
   renderChips();
   liveLine();
   $("recBtn").disabled = false;
@@ -334,8 +556,8 @@ async function record() {
   const cur = S.current = {
     id: "take-" + when.getTime(), when: when.toISOString(), mime, seq: 0, bytes: 0, writeFailures: 0, chain: Promise.resolve(),
     frames: 0, gaps: 0, longestGap: 0, lastFrame: 0, events: [], t0: performance.now(), done: false, memory: [],
-    label: `${size} ${S.rate} Mbps ${S.sound.processed ? "processed" : "clean"}`,
-    base: `capture_camera-test_${stamp(when)}_${size}_${S.rate}mbps_${S.sound.processed ? "processed" : "clean"}`,
+    label: `${S.facing === "environment" ? "back " : ""}${size} ${S.rate} Mbps ${S.sound.processed ? "processed" : "clean"}`,
+    base: `capture_camera-test_${stamp(when)}_${S.facing === "environment" ? "back_" : ""}${size}_${S.rate}mbps_${S.sound.processed ? "processed" : "clean"}`,
     askedRate: S.rate, sound: S.sound.id, size, trackVideo: S.video.getSettings(), trackAudio: S.audio.getSettings(),
   };
   let storedOk = true;
@@ -368,13 +590,33 @@ async function record() {
   tick();
 }
 
-function buildReport(cur, blob, seconds) {
-  return {
-    page: VERSION, when: cur.when, userAgent: navigator.userAgent,
+function pageReport(when) {
+  const out = {
+    page: VERSION, build: BUILD, when, userAgent: navigator.userAgent,
     screen: `${screen.width}x${screen.height} @${devicePixelRatio}`,
     orientation: screen.orientation ? screen.orientation.type : "unknown",
+    camera: S.facing === "environment" ? "back" : "front",
     capabilities: S.capabilities, sizesTried: S.probe, audioInputs: S.audioInputs, formats: S.mimeSupport,
     wakeLock: S.wakeResult, storage: S.storage, soundError: S.soundError || null,
+  };
+  if (S.facing === "environment") {
+    out.back = {
+      lensInUse: S.lens ? S.lens.label : "default back camera",
+      everyCamera: S.videoInputs,
+      backLenses: S.cameras.map(({ id, ...rest }) => rest),
+      trackNow: S.video ? S.video.getSettings() : null,
+      lockSurvey: S.lockSurvey, lockTaps: S.lockLog,
+      motion: { permission: S.motion.permission, events: S.motion.events, intervalMs: S.motion.intervalMs, turningNow: S.motion.rate, facingNow: S.motion.orient },
+      stills: S.stills,
+      brightnessLog: S.luma,
+    };
+  }
+  return out;
+}
+
+function buildReport(cur, blob, seconds) {
+  return {
+    ...pageReport(cur.when),
     take: {
       size: cur.size, format: cur.mime, soundAsked: cur.sound, askedMbps: cur.askedRate,
       seconds: Number(seconds.toFixed(2)), bytes: blob.size, realMbps: Number(((blob.size * 8) / 1e6 / seconds).toFixed(2)),
@@ -457,11 +699,19 @@ async function shareFile(file, fallbackNote) {
 function stopCamera() {
   if (S.stream) S.stream.getTracks().forEach((t) => t.stop());
   S.stream = null;
+  if (S.liveTimer) { clearInterval(S.liveTimer); S.liveTimer = null; }
   if (S.wake) { S.wake.release().catch(() => {}); S.wake = null; }
 }
 
 /* ---- wiring ---- */
-$("startBtn").onclick = startCamera;
+$("startBtn").onclick = () => startCamera("user");
+$("backBtn").onclick = () => startCamera("environment");
+$("stillBtn").onclick = grabStill;
+$("sendStillBtn").onclick = () => { if (S.still) shareFile(new File([S.still.blob], S.still.name, { type: "image/jpeg" }), "Saved as a download."); };
+$("sendReportNowBtn").onclick = () => {
+  const when = new Date();
+  shareFile(new File([JSON.stringify(pageReport(when.toISOString()), null, 2)], `capture_camera-test_${stamp(when)}_back_report.txt`, { type: "text/plain" }), "Saved as a download.");
+};
 $("recBtn").onclick = () => {
   if (S.rec && S.rec.state === "recording") {
     S.stopping = true;
