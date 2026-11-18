@@ -5,7 +5,9 @@
      Nothing leaves the phone: takes stay in this browser until Jason sends them himself.
      Build 2026-11-11 · BACK-CAMERA MODE added (for 360 photos on the gimbal): lists every back lens and what each
      allows, tries exposure / white balance / focus lock, logs picture brightness, reads the motion sensors, grabs a
-     full-size still, and sends the report without needing a recording. The front test is unchanged. -->
+     full-size still, and sends the report without needing a recording. The front test is unchanged.
+     Build 2026-11-17 · SEND IN PARTS: a saved take over ~400 MB also offers "Send part 1 of N" buttons (~250 MB each,
+     whole saved pieces, in order), because Safari crashed sending a 960 MB take; the parts joined in order = the take. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
@@ -102,6 +104,10 @@
     <button class="primary" id="sendVideoBtn">Send video</button>
     <button id="sendReportBtn">Send report</button>
     <button class="wide" id="againBtn">Record another take</button>
+  </div>
+  <div id="partsBox" hidden>
+    <p class="muted" id="partsNote"></p>
+    <div class="actions" id="partsBtns"></div>
   </div>
   <p class="muted" id="sendNote">Send video opens the share sheet. Choose AirDrop and your Mac.</p>
 </section>
@@ -643,7 +649,45 @@ async function finish(cur) {
 async function openTake(take) {
   const blob = await takeBlob(take);
   const report = take.report || { page: VERSION, when: take.when, take: { size: take.label, bytes: blob.size, note: "This take did not finish. The recording stopped before Stop was tapped." } };
-  showResult({ blob, report, base: take.base, mime: take.mime, finished: take.finished });
+  showResult({ blob, report, base: take.base, mime: take.mime, finished: take.finished, takeId: take.id });
+}
+
+/* ---- big takes go in parts (2026-11-17): a 960 MB take made Safari crash ("a problem repeatedly occurred") on
+   Send video. Each part is the next run of saved pieces, so the parts joined in order (cat part1 part2 … > take.mp4)
+   are the take, byte for byte. ?partmb=N sets the part size in MB (testing). */
+const PART_MB = Number(new URLSearchParams(location.search).get("partmb")) || 250;
+async function takeRows(id) {
+  const range = IDBKeyRange.bound([id, 0], [id, Number.MAX_SAFE_INTEGER]);
+  const rows = await tx(["chunks"], "readonly", (t) => reqP(t.objectStore("chunks").getAll(range)));
+  return rows.sort((a, b) => a.seq - b.seq);
+}
+async function showParts(r) {
+  const box = $("partsBox"), btns = $("partsBtns");
+  btns.textContent = "";
+  box.hidden = true;
+  if (r.takeId == null || r.blob.size <= PART_MB * 1048576 * 1.6) return;
+  const rows = await takeRows(r.takeId);
+  const parts = [];
+  let cur = [], size = 0;
+  rows.forEach((row) => {
+    if (size > 0 && size + row.blob.size > PART_MB * 1048576) { parts.push({ from: cur[0], to: cur[cur.length - 1], size }); cur = []; size = 0; }
+    cur.push(row.seq); size += row.blob.size;
+  });
+  if (cur.length) parts.push({ from: cur[0], to: cur[cur.length - 1], size });
+  $("partsNote").textContent = `This take is big (${mb(r.blob.size)}). If Send video fails, send it in ${parts.length} parts instead: tap each part, AirDrop it to the Mac, then the next.`;
+  parts.forEach((p, k) => {
+    const b = document.createElement("button");
+    b.className = "wide";
+    b.textContent = `Send part ${k + 1} of ${parts.length} (${mb(p.size)})`;
+    b.onclick = async () => {
+      const all = await takeRows(r.takeId);
+      const blob = new Blob(all.filter((row) => row.seq >= p.from && row.seq <= p.to).map((row) => row.blob), { type: r.blob.type });
+      await shareFile(new File([blob], `${r.base}_part${k + 1}of${parts.length}.${extFor(r.mime)}`, { type: r.blob.type }), "Saved as a download.");
+      b.textContent = `Part ${k + 1} of ${parts.length} sent ✓ (send again)`;
+    };
+    btns.appendChild(b);
+  });
+  box.hidden = false;
 }
 
 /* ---- result ---- */
@@ -652,6 +696,7 @@ function showResult(r) {
   S.take = r;
   stopCamera();
   show("doneView");
+  showParts(r).catch((e) => { $("partsNote").textContent = "Parts failed: " + e.name; $("partsBox").hidden = false; });
   $("sendNote").textContent = "Send video opens the share sheet. Choose AirDrop and your Mac.";
   if (resultUrl) URL.revokeObjectURL(resultUrl);
   resultUrl = URL.createObjectURL(r.blob);
