@@ -675,15 +675,16 @@ async function showParts(r) {
   });
   if (cur.length) parts.push({ from: cur[0], to: cur[cur.length - 1], size });
   $("partsNote").textContent = `This take is big (${mb(r.blob.size)}). If Send video fails, send it in ${parts.length} parts instead: tap each part, AirDrop it to the Mac, then the next.`;
+  /* each part's file is made BEFORE the tap: Safari opens the share sheet only straight from a tap, and reading the
+     pieces after the tap took too long (v2, 2026-11-17: the share sheet just sat "waiting") */
   parts.forEach((p, k) => {
+    const blob = new Blob(rows.filter((row) => row.seq >= p.from && row.seq <= p.to).map((row) => row.blob), { type: r.blob.type });
+    const file = new File([blob], `${r.base}_part${k + 1}of${parts.length}.${extFor(r.mime)}`, { type: r.blob.type });
     const b = document.createElement("button");
     b.className = "wide";
     b.textContent = `Send part ${k + 1} of ${parts.length} (${mb(p.size)})`;
-    b.onclick = async () => {
-      const all = await takeRows(r.takeId);
-      const blob = new Blob(all.filter((row) => row.seq >= p.from && row.seq <= p.to).map((row) => row.blob), { type: r.blob.type });
-      await shareFile(new File([blob], `${r.base}_part${k + 1}of${parts.length}.${extFor(r.mime)}`, { type: r.blob.type }), "Saved as a download.");
-      b.textContent = `Part ${k + 1} of ${parts.length} sent ✓ (send again)`;
+    b.onclick = () => {
+      shareFile(file, "Saved as a download.").then(() => { b.textContent = `Part ${k + 1} of ${parts.length} sent ✓ (send again)`; });
     };
     btns.appendChild(b);
   });
