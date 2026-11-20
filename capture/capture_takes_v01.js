@@ -1,4 +1,4 @@
-/* capture_takes_v01 · 2026-11-03 · The takes on this phone, shared by the list and the recorder.
+/* capture_takes_v01 · 2026-11-03 · amended 2026-11-20: reads shot list v02 (the Leue Studios editing course) · The takes on this phone, shared by the list and the recorder.
    Every piece of a take goes to IndexedDB as it records, so a crash keeps what was shot.
    A take with good=true turns its shot green. saved=true means it was sent; confirmed=true means Jason saw it arrive,
    and only then can it be freed. Freeing space drops a take's pieces (cleared=true) but keeps its record, so the shot
@@ -45,7 +45,7 @@ const CaptureTakes = (() => {
     clearPieces: (id) => tx(["chunks"], "readwrite", (t) => { t.objectStore("chunks").delete(chunkRange(id)); }),
     /* the shot list is one file, so the list and the recorder read the same words */
     async shotList() {
-      const r = await fetch("/capture/capture_shotlist_v01.json", { cache: "no-cache" });
+      const r = await fetch("/capture/capture_shotlist_v02.json", { cache: "no-cache" });
       if (!r.ok) throw new Error("The shot list did not load (" + r.status + "). Check the connection and reload.");
       const list = await r.json();
       list.shots = list.sections.flatMap((s) => s.shots.map((shot) => ({ ...shot, section: s.name, setup: s.setup, project: s.project })));
