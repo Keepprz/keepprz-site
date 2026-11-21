@@ -1,0 +1,640 @@
+{
+ "name": "Leue Studios: editing course (15 lessons) + system course 'Directed, Not Operated' (12 lessons)",
+ "version": "4.0 · 2026-11-20 (system course first; every section names its course)",
+ "source": [
+  "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/leue_studios_editing-course-scripts_v01.md",
+  "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/leue_studios_system-course-scripts_v01.md"
+ ],
+ "sections": [
+  {
+   "name": "SYSTEM COURSE · sound test first",
+   "setup": "Outside, where you will really shoot. Any spot.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "D00",
+     "title": "Sound test",
+     "body": "This is a sound test for the system course. One, two, three, four, five.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated' (sound check, not used in a lesson)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "talking-head-capture"
+     }
+    }
+   ]
+  },
+  {
+   "name": "SYSTEM COURSE · lessons 1 to 3",
+   "setup": "Spot 1. Standing, outside, something with depth behind you (a different place from the editing-course spots if you can). Phone at eye height. Wait a beat after the countdown.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "D01a",
+     "title": "1. Directed, not operated: opening",
+     "body": "When movies were cut on film, the editor had a film cutter. The editor said where to cut, and the film cutter did it with scissors and tape. Then the computer took that job. Now it's taking the next one: moving clips on a timeline. You're the director now. This course shows you how.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 1: Directed, not operated (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D01b",
+     "title": "1. Directed, not operated: close",
+     "body": "Here's the test before we start. Take a video you edited and write down every note you'd give an editor to make it better. If you can write the notes, you can direct. If you can't, start with the editing course. Next: the three parts of the system.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 1: Directed, not operated (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D02a",
+     "title": "2. The three parts: opening",
+     "body": "When people hear that an AI edits my videos, they picture one magic button. There's no button. There are three parts, and if one is missing, it doesn't work. The model. The written workflows. And the tools.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 2: The three parts (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D02b",
+     "title": "2. The three parts: close",
+     "body": "Look at your week and list the jobs you do over and over. Offloading cards, syncing sound, subtitles, exports. Every one of those is a workflow waiting to be written. Next: why the model forgets, and how to make it remember.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 2: The three parts (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D03a",
+     "title": "3. It forgets everything: opening",
+     "body": "The first thing that drove me crazy: I'd teach it something, and the next day it was gone. Every new chat starts from zero. It's not broken. That's how these models work. So the memory can't live in the chat. It has to live in files.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 3: It forgets everything (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D03b",
+     "title": "3. It forgets everything: close",
+     "body": "Start your rules file today. Five lines. Where your footage lives, how you name your files, your export settings, and two things you never want to see in your videos. Next: one job, one workflow.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 3: It forgets everything (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    }
+   ]
+  },
+  {
+   "name": "SYSTEM COURSE · lessons 4 to 6",
+   "setup": "Spot 2. Standing, outside, something with depth behind you (a different place from the editing-course spots if you can). Phone at eye height. Wait a beat after the countdown.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "D04a",
+     "title": "4. One job, one workflow: opening",
+     "body": "A workflow is the most important thing in this course. It's a recipe for one job, written down. And there's one rule about it that will save you more grief than anything else: one job has one workflow. Only one.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 4: One job, one workflow (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D04b",
+     "title": "4. One job, one workflow: close",
+     "body": "Write your first one in plain words, the way you'd explain the job to a new assistant. Don't make it perfect. It gets better every time it runs. Next: the moment everything changed for me, when the model could see the footage.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 4: One job, one workflow (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D05a",
+     "title": "5. Let it see the footage: opening",
+     "body": "For a long time it couldn't edit, because it couldn't see. It knew file names, not pictures. Then I gave it footage and it could tell me what was in it. Out of focus. A head turning. A camera move starting. That's when I knew everything was going to change.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 5: Let it see the footage (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D05b",
+     "title": "5. Let it see the footage: close",
+     "body": "Try it with one folder. Pull a frame every few seconds from each clip, put them on one page, and ask the model to describe every clip. Check what it gets right and what it gets wrong. Next: directing from a storyboard.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 5: Let it see the footage (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D06a",
+     "title": "6. Direct from a storyboard: opening",
+     "body": "I don't want to read a list of clips. I want to see them. So the system shows me a storyboard: every shot of the film as a picture, with options. And I direct off the board. Swap B with C. Hold the smile. That's my whole job now.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 6: Direct from a storyboard (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D06b",
+     "title": "6. Direct from a storyboard: close",
+     "body": "Next time you plan a video, ask for the board before the cut. Pick off pictures, not file names. You'll be amazed how fast the notes come when you can see everything at once. Next: what to do with a note the system can't handle.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 6: Direct from a storyboard (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    }
+   ]
+  },
+  {
+   "name": "SYSTEM COURSE · lessons 7 to 9",
+   "setup": "Spot 3. Standing, outside, something with depth behind you (a different place from the editing-course spots if you can). Phone at eye height. Wait a beat after the countdown.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "D07a",
+     "title": "7. A note is not a new process: opening",
+     "body": "Here's the mistake that cost me the most. I'd give a note like \"make it brighter,\" and the model would write a brand new fix just for that. Then another. Then another. Until the footage was ruined. A note goes into the workflow. It's never a reason for a new one.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 7: A note is not a new process (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D07b",
+     "title": "7. A note is not a new process: close",
+     "body": "Next time you give a note, ask the model one question: which step of the workflow does this change? If it can't name one, you've found a gap in the workflow. Fix the gap, not the video. Next: why I don't trust my ears, or my eyes.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 7: A note is not a new process (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D08a",
+     "title": "8. Measure, don't eyeball: opening",
+     "body": "My speakers lie. I found out when the system measured my mixes against records I love. Every one of mine was darker and louder than I thought. My ears said it was fine. So now every decision that can be a number is a number.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 8: Measure, don't eyeball (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D08b",
+     "title": "8. Measure, don't eyeball: close",
+     "body": "Pick one thing you always judge by feel. Loudness is the easy one. Give it a number in your rules file, and let the system measure it on every export. Next: making the system check its own work.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 8: Measure, don't eyeball (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D09a",
+     "title": "9. Make it check its own work: opening",
+     "body": "A model will tell you it's done when it isn't. It's not lying. It just believes it. So the system doesn't take its own word. It checks, with tools that refuse to pass bad work. And it tests a sample before it does the whole batch.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 9: Make it check its own work (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D09b",
+     "title": "9. Make it check its own work: close",
+     "body": "Think of the mistake that has slipped past you more than once. A black first frame. A word cut off. The wrong export size. That's your first gate. Have the model build a check that refuses it. Next: never accept a description.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 9: Make it check its own work (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    }
+   ]
+  },
+  {
+   "name": "SYSTEM COURSE · lessons 10 to 12",
+   "setup": "Spot 4. Standing, outside, something with depth behind you (a different place from the editing-course spots if you can). Phone at eye height. Wait a beat after the countdown.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "D10a",
+     "title": "10. Show me the file: opening",
+     "body": "A model is very good at telling you how great the video turned out. I don't want to hear about it. I want to watch it. And next week, I want to be able to find it. So everything it makes is opened on my screen, and saved where it belongs.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 10: Show me the file (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D10b",
+     "title": "10. Show me the file: close",
+     "body": "Add one line to your rules file: show me the file, not a description, and give me the full path. You'll be surprised how often that one line catches a problem. Next: what to do when it gets it wrong.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 10: Show me the file (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D11a",
+     "title": "11. When it's wrong, fix the workflow: opening",
+     "body": "It will get things wrong. Mine did, all the time, at the start. That's not failure. That's training. Every time it gets something wrong, the fix goes into the workflow, so it never gets that thing wrong again. That's how you train it.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 11: When it's wrong, fix the workflow (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D11b",
+     "title": "11. When it's wrong, fix the workflow: close",
+     "body": "This week, keep a list of every note you give. At the end of the week, every note on that list should be a line in a workflow. That's the whole training process. Next: your first workflow, start to finish.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 11: When it's wrong, fix the workflow (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D12a",
+     "title": "12. Your first workflow: opening",
+     "body": "Let's put it all together. You're going to build one workflow, on one real job, this week. Not ten. One. Pick the job you do the most and like the least. That's the one.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 12: Your first workflow (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    },
+    {
+     "code": "D12b",
+     "title": "12. Your first workflow: close",
+     "body": "That's the course. Know how to edit. Write it down. Make it check itself. And give notes like a director. Post your first workflow in the community, and tell us what it got wrong. That's where the good stuff is. See you in there.",
+     "for": {
+      "film": "Leue Studios system course 'Directed, Not Operated', lesson 12: Your first workflow (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/system-course/",
+      "workflow": "course-lesson (§6, the whole lesson); takes by talking-head-capture"
+     }
+    }
+   ]
+  },
+  {
+   "name": "EDITING COURSE · sound test first",
+   "setup": "Outside, where you will really shoot. Any spot.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "E00",
+     "title": "Sound test",
+     "body": "This is a sound test for the editing course. One, two, three, four, five.",
+     "for": {
+      "film": "Leue Studios editing course (sound check, not used in a lesson)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture"
+     }
+    }
+   ]
+  },
+  {
+   "name": "EDITING COURSE · lessons 1 to 4",
+   "setup": "Spot 1. Standing, outside, something with depth behind you. Phone at eye height. Wait a beat after the countdown.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "E01a",
+     "title": "1. What editing is: opening",
+     "body": "Editing is not about software. Every editor has the same three things: a place for your clips, a screen to watch them, and a timeline to put them in order. What matters is why you cut. And there's only one reason. To serve the story. That's what this course is about.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 1: What editing is (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E01b",
+     "title": "1. What editing is: close",
+     "body": "So before you touch a single clip, say out loud what the scene is about and how it should feel. One sentence. If you can't say it, you're not ready to cut. Next lesson: the one rule that sits under every cut you'll ever make.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 1: What editing is (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E02a",
+     "title": "2. Contrast: opening",
+     "body": "A cut is a change. You're taking the picture away and giving the audience a new one. So here's the rule under all of it: don't cut unless something changes. And the bigger the change, the stronger the cut. That's contrast.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 2: Contrast (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E02b",
+     "title": "2. Contrast: close",
+     "body": "Try it on your last video. Go cut by cut and ask: what changed? You'll find cuts that are there for no reason. Take them out, or make the change bigger. That one habit will improve your editing more than any effect.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 2: Contrast (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E03a",
+     "title": "3. Wide, medium, close: opening",
+     "body": "You've got three basic shots. Wide, medium and close. Each one tells the audience something different. And the jump between them is the easiest contrast you have. Here's what each one is for.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 3: Wide, medium, close (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E03b",
+     "title": "3. Wide, medium, close: close",
+     "body": "This starts when you shoot. For anything that matters, get it wide, get it medium, get it close. If you only shoot one size, you've got nothing to cut to. Next: the cut that breaks this rule on purpose.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 3: Wide, medium, close (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E04a",
+     "title": "4. The jump cut: opening",
+     "body": "A jump cut looks like a mistake. Same shot, same framing, and the person suddenly jumps. Used by accident, it makes you look like an amateur. Used on purpose, it's one of the strongest tools you have. You need to know which one you're doing.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 4: The jump cut (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E04b",
+     "title": "4. The jump cut: close",
+     "body": "So the jump cut isn't wrong, and it isn't right. It makes people uneasy. If the story calls for uneasy, use it, and use it boldly. If it doesn't, cover it. Next lesson is the opposite: how to make a cut disappear.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 4: The jump cut (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    }
+   ]
+  },
+  {
+   "name": "EDITING COURSE · lessons 5 to 8",
+   "setup": "Spot 2. A different spot. Standing, outside, something with depth behind you. Phone at eye height. Wait a beat after the countdown.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "E05a",
+     "title": "5. Cutting on action: opening",
+     "body": "Most of the time you don't want the audience to notice the cut. You want them inside the story. The oldest trick for hiding a cut is this: cut in the middle of a movement.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 5: Cutting on action (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E05b",
+     "title": "5. Cutting on action: close",
+     "body": "When you're filming, let people finish what they're doing, then shoot it again from a second spot. In the edit, look for the movement, and cut inside it. Next: pace. How long a shot should stay on screen.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 5: Cutting on action (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E06a",
+     "title": "6. Pace: opening",
+     "body": "How long should a shot last? Long enough to do its job, and no longer. But the length of your shots is also the heartbeat of the scene. Short shots feel fast. Long shots feel calm, or tense. You're setting the audience's pulse.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 6: Pace (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E06b",
+     "title": "6. Pace: close",
+     "body": "Here's a test. Watch your cut with the sound off. If you get bored in a shot, it's too long. If you can't tell what you saw, it's too short. Your gut already knows pace. Trust it. Next: what happens when you change the order.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 6: Pace (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E07a",
+     "title": "7. Order: opening",
+     "body": "Here's something that still amazes me. The audience doesn't read your shots one at a time. They read them together. Put two shots next to each other and people invent a meaning that isn't in either one. That means the order is the story.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 7: Order (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E07b",
+     "title": "7. Order: close",
+     "body": "So when a scene isn't working, don't reach for an effect. Move the shots around. Try the ending first. Try the reaction before the action. Moving shots is free, and it's where a lot of the real editing happens. Next: the two shots that matter most in any scene.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 7: Order (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E08a",
+     "title": "8. The first shot and the last shot: opening",
+     "body": "A scene is a little movie inside the movie. It has a beginning, a middle and an end. So two shots matter more than all the others: the first one and the last one. The first makes a promise. The last ties the bow.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 8: The first shot and the last shot (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E08b",
+     "title": "8. The first shot and the last shot: close",
+     "body": "On every shoot, film an opening shot and an ending shot on purpose. Don't hope you'll find them later. And in the edit, pick those two first, then build the middle between them. Next: the most valuable shot you can film.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 8: The first shot and the last shot (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    }
+   ]
+  },
+  {
+   "name": "EDITING COURSE · lessons 9 to 12",
+   "setup": "Spot 3. A different spot. Standing, outside, something with depth behind you. Phone at eye height. Wait a beat after the countdown.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "E09a",
+     "title": "9. The reaction shot: opening",
+     "body": "When two people are in a scene, new editors always show the person who's talking. But the story is very often on the face of the person who's listening. Knowing who to look at, and when, is most of editing a conversation.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 9: The reaction shot (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E09b",
+     "title": "9. The reaction shot: close",
+     "body": "So when you film an interview or an event, shoot the listeners. The nod, the laugh, the surprise. Ten seconds of someone reacting will save your edit again and again. Next: letting the sound go first.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 9: The reaction shot (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E10a",
+     "title": "10. Sound leads the picture: opening",
+     "body": "In a beginner's edit, the picture and the sound cut at the same moment, every time. It feels like blocks. Click, click, click. Real life doesn't work that way. You hear something, then you turn and look. Do that in the edit, and your cuts start to flow.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 10: Sound leads the picture (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E10b",
+     "title": "10. Sound leads the picture: close",
+     "body": "Look at your timeline. If every cut is a straight line down through picture and sound, try dragging a few sound edits half a second to the left or right. It's a small move, and it makes an edit feel professional. Next: b-roll.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 10: Sound leads the picture (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E11a",
+     "title": "11. B-roll: opening",
+     "body": "If you film businesses, most of what you make is someone talking, with other shots laid over the top. That's b-roll. Most people use it as wallpaper. It can do three real jobs. Let me show you.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 11: B-roll (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E11b",
+     "title": "11. B-roll: close",
+     "body": "When you shoot, do the interview first if you can, then film the b-roll that matches what was said. And get far more than you think you need. Next: how to keep the audience from getting lost.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 11: B-roll (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E12a",
+     "title": "12. The line: opening",
+     "body": "Some rules of editing aren't about taste. They're about not confusing people. The biggest one is direction. If the audience loses track of where people are and which way they're facing, they stop feeling the scene and start trying to work it out.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 12: The line (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E12b",
+     "title": "12. The line: close",
+     "body": "Before you film two people, or anything that moves, pick your side and stay on it. It costs nothing on the day, and it's very hard to fix in the edit. Next: time. How to skip it without anyone noticing.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 12: The line (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    }
+   ]
+  },
+  {
+   "name": "EDITING COURSE · lessons 13 to 15",
+   "setup": "Spot 4. A different spot. Standing, outside, something with depth behind you. Phone at eye height. Wait a beat after the countdown.",
+   "project": "leue_studios",
+   "shots": [
+    {
+     "code": "E13a",
+     "title": "13. Time: opening",
+     "body": "Real life is slow. Bread takes hours. Your video has thirty seconds. Editing is mostly deciding what to leave out, so the audience feels the whole thing without sitting through it.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 13: Time (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E13b",
+     "title": "13. Time: close",
+     "body": "Go through your timeline and look at the first and last second of every shot. That's where the dead air hides. Trim it, and the whole video gets tighter. Next: music.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 13: Time (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E14a",
+     "title": "14. Music: opening",
+     "body": "Music is the fastest way to tell an audience how to feel. It also sets a beat, and your cuts can land on that beat or fight it. I'm a musician, so I care about this one a lot.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 14: Music (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E14b",
+     "title": "14. Music: close",
+     "body": "Choose your music before you start cutting. Find the beat, find the big moment in the track, and plan your best shot to land there. One lesson left: how to finish.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 14: Music (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E15a",
+     "title": "15. The final pass: opening",
+     "body": "You've got the tools now. Contrast. Size. Pace. Order. Sound. This last lesson is how to finish an edit: how to look at your own work and know what to fix.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 15: The final pass (the opening)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    },
+    {
+     "code": "E15b",
+     "title": "15. The final pass: close",
+     "body": "That's the course. Editing isn't the software. It's a hundred small decisions, all answering one question: what does the story need? Keep asking it, and you'll keep getting better. Come and tell me what you're working on in the Skool. I'd like to see it.",
+     "for": {
+      "film": "Leue Studios editing course, lesson 15: The final pass (the close)",
+      "folder": "/Users/jgd_mbp/Documents/STUDIO/md/leue_studios/editing-course/",
+      "workflow": "talking-head-capture (takes); the course-lesson build waits on Jason's 'new workflow ok'"
+     }
+    }
+   ]
+  }
+ ]
+}

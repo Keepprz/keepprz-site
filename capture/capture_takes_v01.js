@@ -45,7 +45,7 @@ const CaptureTakes = (() => {
     clearPieces: (id) => tx(["chunks"], "readwrite", (t) => { t.objectStore("chunks").delete(chunkRange(id)); }),
     /* the shot list is one file, so the list and the recorder read the same words */
     async shotList() {
-      const r = await fetch("/capture/capture_shotlist_v03.json", { cache: "no-cache" });
+      const r = await fetch("/capture/capture_shotlist_v04.json", { cache: "no-cache" });
       if (!r.ok) throw new Error("The shot list did not load (" + r.status + "). Check the connection and reload.");
       const list = await r.json();
       list.shots = list.sections.flatMap((s) => s.shots.map((shot) => ({ ...shot, section: s.name, setup: s.setup, project: s.project })));
