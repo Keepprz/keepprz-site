@@ -12,3 +12,17 @@
 /video          /social/   302
 /automations/*  /about/    302
 /automations    /about/    302
+
+# 2026-11-23 — Cloudflare Pages (the move off Netlify). Netlify answered /about.html with a 301 to /about/;
+# Cloudflare does not, so the old ".html" spelling of each section is redirected here by hand.
+/about.html          /about/          301
+/work.html           /work/           301
+/websites.html       /websites/       301
+/social.html         /social/         301
+/str.html            /str/            301
+/privacy.html        /privacy/        301
+/data-deletion.html  /data-deletion/  301
+/docs.html           /docs/           301
+/capture.html        /capture/        301
+/demo.html           /demo/           301
+/demo-v1.html        /demo-v1/        301

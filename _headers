@@ -29,3 +29,7 @@ https://keepprz.pages.dev/*
   X-Robots-Tag: noindex
 https://:branch.keepprz.pages.dev/*
   X-Robots-Tag: noindex
+
+# Netlify sent JavaScript as UTF-8; Cloudflare sends no charset. These files hold non-ASCII text.
+/*.js
+  Content-Type: application/javascript; charset=utf-8
