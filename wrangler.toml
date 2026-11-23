@@ -1,0 +1,14 @@
+# Cloudflare Pages settings for keepprz.com (added 2026-11-22, the move off Netlify).
+# Plain static HTML. Build command: sh cloudflare-build.sh (copies the site into _site/, leaving working files out).
+# nodejs_compat gives the visit counter node:crypto and process.env.
+name = "keepprz"
+pages_build_output_dir = "_site"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Plain settings (not secrets). With this file in the repo, Cloudflare only lets
+# SECRETS be added in the dashboard — plain values live here.
+# Secret, added with `npx wrangler pages secret put SUPABASE_SERVICE_KEY --project-name keepprz`:
+#   SUPABASE_SERVICE_KEY   (the visit counter's database key)
+[vars]
+SITE_KEY = "kz"

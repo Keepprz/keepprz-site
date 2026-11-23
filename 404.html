@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- The "page not found" page. Added 2026-11-22 for the move to Cloudflare Pages:
+     without a 404.html at the root, Cloudflare answers every unknown address
+     with the home page and a 200, which search engines read as duplicate pages. -->
+<title>Page not found — Keepprz</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css?v=2026-11-03a">
+<style>
+.notfound{max-width:760px; padding-bottom:96px;}
+.notfound p{font-size:17px; line-height:1.7; color:var(--ink-soft); margin-bottom:22px;}
+.notfound .btn{margin-right:10px;}
+@media (max-width:640px){.page-hero h1{font-size:38px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="/">Keep<span class="accent">prz</span></a>
+    <nav class="navlinks">
+      <a class="hide" href="/work/">Work</a>
+      <a class="hide" href="/about/">About</a>
+      <a class="btn" href="tel:+18083491077">Call Jason</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="page-hero">
+    <span class="pill">Not found</span>
+    <h1>That page is <span class="accent">not here.</span></h1>
+  </div>
+  <main class="notfound">
+    <p>The address may have changed, or it may have been typed a little off. These will get you where you were going.</p>
+    <p><a class="btn" href="/">Home</a> <a class="btn" href="/work/">Work</a> <a class="btn" href="/about/">About</a></p>
+  </main>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div class="logo">Keep<span class="accent">prz</span></div>
+      <div class="tag">Custom tools for businesses. Built by an owner, for owners.</div>
+    </div>
+    <div class="col">
+      <h4>Explore</h4>
+      <a href="/work/">Work</a>
+      <a href="/about/">About</a>
+      <a href="/privacy/">Privacy Policy</a>
+      <a href="/data-deletion/">Data Deletion</a>
+    </div>
+    <div class="col">
+      <h4>Get in touch</h4>
+      <a href="tel:+18083491077">(808) 349-1077</a>
+      <a href="mailto:jason@keepprz.com">jason@keepprz.com</a>
+    </div>
+  </div>
+  <div class="wrap copyright">© 2026 Keepprz. Custom tools for businesses.</div>
+</footer>
+
+<!-- Netlify forgave upper-case addresses; Cloudflare does not.
+     If the address had capitals in it, try the lower-case one once. -->
+<script>
+  (function () {
+    try {
+      var p = location.pathname, fixed = p.toLowerCase();
+      if (fixed !== p && !/[?&]nf=1/.test(location.search)) {
+        location.replace(fixed + (location.search ? location.search + '&nf=1' : '?nf=1') + location.hash);
+      }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>

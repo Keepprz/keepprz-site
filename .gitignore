@@ -15,3 +15,7 @@ _to_delete/
 
 # Home page mockups for Jason to review on disk. Never published (Netlify publishes the repo root).
 _mockups/
+
+# Cloudflare Pages (2026-11-22): the build copy of the site and wrangler's local cache.
+_site/
+.wrangler/

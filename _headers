@@ -1,4 +1,4 @@
-# Netlify _headers — must live at the publish root.
+# _headers (read by Netlify and by Cloudflare Pages) — must live at the publish root.
 #
 # /docs/ is the unlisted handbook. It is PUBLIC to anyone with the URL (an agent
 # cannot log in, so it has to be fetchable without auth) — it is simply not
@@ -16,3 +16,16 @@
 # identically for an agent fetching them.
 /docs/*.md
   Content-Type: text/plain; charset=utf-8
+
+# ── Cloudflare Pages (added 2026-11-22, the move off Netlify) ──────────────────
+# Netlify sent HSTS by itself; Cloudflare Pages does not. Pages also adds
+# "Access-Control-Allow-Origin: *" to every static file, which Netlify never did.
+/*
+  Strict-Transport-Security: max-age=31536000
+  ! Access-Control-Allow-Origin
+
+# The pages.dev address is a second copy of the site: never let it be indexed.
+https://keepprz.pages.dev/*
+  X-Robots-Tag: noindex
+https://:branch.keepprz.pages.dev/*
+  X-Robots-Tag: noindex
